@@ -4,6 +4,6 @@
 
 ### Authors: 
 
-Adrià Nicolau Beltran [AdriNicolau](https://github.com/AdriNicolau)
+Adrià Nicolau Beltran [AdriNicu](https://github.com/AdriNicu)
 Pol Sala Lidón [PolSala](https://github.com/polsala)
 Amat Martínez Vilà [amatmv](https://github.com/amatmv)
