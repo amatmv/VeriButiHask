@@ -100,3 +100,23 @@ cartesPalMa (NewM llista) pal= [x | x<-llista, (pal == (getPal x))]
 --cartesPal: Retorna les cartes que son del Pal especificat en la llista
 cartesPal :: [Carta]->Pal->[Carta]
 cartesPal llista pal = [x | x<-llista, (pal == (getPal x))]
+
+--basa1: Retorna la tirada numero 1 de la Basa
+basa1 :: Basa -> Carta
+basa1 (NewB (_,w,_,_,_)) = w
+
+--basa2: Retorna la tirada numero 2 de la Basa
+basa2 :: Basa -> Carta
+basa2 (NewB (_,_,x,_,_)) = x
+
+--basa3: Retorna la tirada numero 3 de la Basa
+basa3 :: Basa -> Carta
+basa3 (NewB (_,_,_,y,_)) = y
+
+--basa4: Retorna la tirada numero 4 de la Basa
+basa4 :: Basa -> Carta
+basa4 (NewB (_,_,_,_,z)) = z
+
+--iniciadorBasa: Retorna el numero del jugador que tira la primera carta de la basa.
+iniciadorBasa :: Basa -> Integer
+iniciadorBasa (NewB (j,_,_,_,_)) = j
