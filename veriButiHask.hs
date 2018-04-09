@@ -120,3 +120,25 @@ basa4 (NewB (_,_,_,_,z)) = z
 --iniciadorBasa: Retorna el numero del jugador que tira la primera carta de la basa.
 iniciadorBasa :: Basa -> Integer
 iniciadorBasa (NewB (j,_,_,_,_)) = j
+
+--palGuanyadorsBasa
+palGuanyadorBasa :: Basa -> Trumfu -> Pal
+palGuanyadorBasa b t
+  | ((cartesPalBasa b (trumfu2Pal t)) /= []) = (trumfu2Pal t)
+  | otherwise = (getPal (basa1 b))
+
+--trumfu2Pal
+trumfu2Pal :: Trumfu -> Pal
+trumfu2Pal trumfu = case trumfu of
+  Or -> Orus
+  Ba -> Bastos
+  Co -> Copes
+  Es -> Espases
+  Bu -> error "No és un Pal"
+
+pal2Trumfu :: Pal -> Trumfu
+pal2Trumfu pal = case pal of
+  Orus  -> Or
+  Bastos -> Ba
+  Copes -> Co
+  Espases -> Es
