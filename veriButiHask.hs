@@ -80,3 +80,23 @@ getCardPunctuation tipus = case tipus of
 punts :: [Carta] -> Integer
 punts [] = 0
 punts ((NewC (p,t)):cv) = (getCardPunctuation t) + (punts cv)
+
+--getPal: Retorna el pal d'una carta
+getPal :: Carta -> Pal
+getPal (NewC (p,t)) = p
+
+--getTipus: Retorna el tipus d'una Carta
+getTipus :: Carta -> TipusCarta
+getTipus (NewC (p,t)) = t
+
+--cartesPalBasa: Retorna les cartes que son del Pal especificat en la Basa
+cartesPalBasa :: Basa->Pal->[Carta]
+cartesPalBasa (NewB (j,w,x,y,z)) pal = [x | x<-[w,x,y,z], (pal == (getPal x))]
+
+--cartesPalMa: Retorna les cartes que son del Pal especificat en la ma
+cartesPalMa :: Ma->Pal->[Carta]
+cartesPalMa (NewM llista) pal= [x | x<-llista, (pal == (getPal x))]
+
+--cartesPal: Retorna les cartes que son del Pal especificat en la llista
+cartesPal :: [Carta]->Pal->[Carta]
+cartesPal llista pal = [x | x<-llista, (pal == (getPal x))]
