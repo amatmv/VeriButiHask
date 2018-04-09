@@ -1,0 +1,6 @@
+--Template Carta
+NewC (Orus, As)
+--Template Ma
+NewM [NewC (Orus, As), NewC (Orus, Dos), NewC (Orus, Tres), NewC (Orus, Quatre), NewC (Orus, Cinc), NewC (Orus, Sis), NewC (Orus, Set), NewC (Orus, Vuit), NewC (Orus, Manilla), NewC (Orus, Sota), NewC (Orus, Cavall), NewC (Orus, Rei)]
+--Template basa
+NewB (2,NewC (Orus, As), NewC (Orus, Dos), NewC (Orus, Tres), NewC (Orus, Quatre))
