@@ -47,7 +47,7 @@ show2 (NewM (x:xs)) = ((show x) ++ "-" ++ (show2 (NewM xs)))
 data Basa = NewB (Integer, Carta, Carta, Carta, Carta) deriving Eq
 
 instance Show Basa where --Fer Basa mostrable.
-  show (NewB (j,w,x,y,z))= ("Tirada iniciada per el jugador: " ++ (show j) ++ "\n" ++ "  Tirada 1: " ++ (show w) ++ "\n" ++ "  Tirada 2: " ++ (show x) ++ "\n" ++ "  Tirada 3: " ++ (show y) ++ "\n" ++ "  Tirada 4: " ++ (show w))
+  show (NewB (j,w,x,y,z))= ("Tirada iniciada per el jugador: " ++ (show j) ++ "\n" ++ "  Tirada 1: " ++ (show w) ++ "\n" ++ "  Tirada 2: " ++ (show x) ++ "\n" ++ "  Tirada 3: " ++ (show y) ++ "\n" ++ "  Tirada 4: " ++ (show z))
 
 --Funcions Auxiliars
 --getCardValue: Retorna el valor numèric del Tipuscarta.
