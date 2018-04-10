@@ -121,7 +121,11 @@ basa4 (NewB (_,_,_,_,z)) = z
 iniciadorBasa :: Basa -> Integer
 iniciadorBasa (NewB (j,_,_,_,_)) = j
 
---palGuanyadorsBasa
+--cartesBasa
+cartesBasa :: Basa -> [Carta]
+cartesBasa (NewB (j,w,x,y,z)) = [w,x,y,z]
+
+--palGuanyadorBasa
 palGuanyadorBasa :: Basa -> Trumfu -> Pal
 palGuanyadorBasa b t
   | ((cartesPalBasa b (trumfu2Pal t)) /= []) = (trumfu2Pal t)
@@ -142,3 +146,24 @@ pal2Trumfu pal = case pal of
   Bastos -> Ba
   Copes -> Co
   Espases -> Es
+
+jugadorGuanyaBasa :: Basa -> Trumfu -> Integer
+jugadorGuanyaBasa b t = tiradorCarta (cartaGuanyadora (basa1 b) (cartesBasa b) (palGuanyadorBasa b t)) b
+
+cartaGuanyadora :: Carta -> [Carta] -> Pal -> Carta
+cartaGuanyadora c [] p = c
+cartaGuanyadora c (x:xs) p = if (mata c x p) == c then cartaGuanyadora c xs p else cartaGuanyadora x xs p
+
+mata :: Carta -> Carta -> Pal -> Carta
+mata c1 c2 p
+  | (getPal c1 == p) && (getPal c2 /= p) = c1
+  | (getPal c1 /= p) && (getPal c2 == p) = c2
+  | c1 >= c2 = c1
+  | c2 > c1 = c2
+
+tiradorCarta :: Carta -> Basa -> Integer
+tiradorCarta c b
+  | (c == (basa1 b)) = (iniciadorBasa b)
+  | (c == (basa2 b)) = mod ((iniciadorBasa b)+1) 4
+  | (c == (basa3 b)) = mod ((iniciadorBasa b)+2) 4
+  | (c == (basa4 b)) = mod ((iniciadorBasa b)+3) 4
