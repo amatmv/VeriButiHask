@@ -4,4 +4,12 @@ NewC (Orus, As)
 NewM [NewC (Orus, As), NewC (Orus, Dos), NewC (Orus, Tres), NewC (Orus, Quatre), NewC (Orus, Cinc), NewC (Orus, Sis), NewC (Orus, Set), NewC (Orus, Vuit), NewC (Copes, Manilla), NewC (Bastos, Sota), NewC (Espases, Cavall), NewC (Espases, Rei)]
 --Template basa
 NewB (2,NewC (Orus, As), NewC (Orus, Dos), NewC (Orus, Tres), NewC (Orus, Quatre))
-(NewB (2,NewC (Espases, As), NewC (Orus, Dos), NewC (Bastos, Tres), NewC (Espases, Quatre)))
+
+--Guanya basa 1
+(NewB (1,NewC (Espases, As), NewC (Orus, Dos), NewC (Bastos, Tres), NewC (Espases, Quatre))) Es
+
+--Guanya basa 1
+(NewB (3,NewC (Espases, As), NewC (Orus, Dos), NewC (Espases, Manilla), NewC (Espases, Quatre))) Es
+
+--Guanya basa 3
+(NewB (4,NewC (Bastos, Set), NewC (Bastos, Vuit), NewC (Copes, Tres), NewC (Bastos, Rei))) Es
