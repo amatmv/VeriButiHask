@@ -1,56 +1,90 @@
---Implementació d'un validador de partides de Butifarra.
+{-------------------------------------------------------------}
+{--                                                         --}
+{--  IMPLEMENTACIÓ D'UN VALIDADOR DE PARTIDES DE BUTIFARRA  --}
+{--                                                         --}
+{-------------------------------------------------------------}
 
---Definició dels nous tipus de dades
---Trumfu: Pal de la Ma
-data Trumfu = Or | Ba | Co | Es | Bu deriving (Show, Eq) --Fer Trumfu mostrable i comparable
+--------------------------
+-- Definicions de tipus --
+--------------------------
 
---Pal: Pal de la basa
-data Pal = Orus | Bastos | Copes | Espases deriving (Show, Eq) --Fer Pal mosatrable i comparable
+{-------- PAL: Pal de la basa ------
+  És mostrable i comparable.
+-}
+data Pal = Orus | Bastos | Copes | Espases
+           deriving (Show, Eq)
 
---TipusCarta: Numero de la carta
-data TipusCarta = As | Dos | Tres | Quatre | Cinc | Sis | Set | Vuit | Manilla | Sota | Cavall | Rei deriving (Show, Eq) --Fer TipusCarta mostrable i comparable
+{-------- TRUMFU: Pal de la Ma ------
+  El Trumfu pot ser un Pal o "Butifarra".
+  És mostrable i comparable.
+-}
+data Trumfu = Or | Ba | Co | Es | Bu
+              deriving (Show, Eq)
 
-instance Ord TipusCarta where --Fer TipusCarta ordenable
+{--------- TIPUSCARTA: Numero de la carta ------
+  Cada Pal té 12 numeros, que van des del 1 fins al 12.
+  És mostrable, comparable i ordenable.
+-}
+data TipusCarta = As | Dos | Tres | Quatre | Cinc | Sis | Set | Vuit | Manilla |
+                  Sota | Cavall | Rei
+                  deriving (Show, Eq)
+instance Ord TipusCarta where
   compare tipuscarta1 tipuscarta2
     | (getCardValue(tipuscarta1)) == (getCardValue(tipuscarta2)) = EQ
     | (getCardValue(tipuscarta1)) <= (getCardValue(tipuscarta2)) = LT
     | otherwise = GT
 
---Carta: Representació en Haskell d'una carta de la baralla espanyola.
-data Carta = NewC (Pal,TipusCarta)
+{------ CARTA: Representació en Haskell d'una carta de la baralla espanyola. ------
+  Una Carta Pertany a un Pal i és un tipus de carta (que representa el nombre de  l'1 al 12)
+  És comparable, mostrable i ordenable.
+-}
+data Carta = NewC (Pal, TipusCarta)
 
-instance Eq Carta where --Fer Carta comparable
+instance Eq Carta where
   (NewC (p1,t1)) == (NewC (p2,t2)) = (t1 == t2)
 
-instance Show Carta where --Fer Carta mostrable
-  show (NewC (p,t)) =  "["++ ((show t) ++ " " ++ (show p)) ++ "]"
+instance Show Carta where
+  show (NewC (pal, tipus)) =  "["++ ((show tipus) ++ " " ++ (show pal)) ++ "]"
 
-instance Ord Carta where --Fer carta ordenable
+instance Ord Carta where
   compare (NewC (p1,t1)) (NewC (p2,t2))
     | t1 == t2 = EQ
     | t1 <= t2 = LT
     | otherwise = GT
 
---Ma: Representació de la ma d'un jugador.
-data Ma = NewM [Carta] deriving Eq --Fer Ma comparable
+{---- MA: Representació de la ma d'un jugador. ----
+  S'entén per "Ma" el conjunt de Cartes que té el jugador a la seva mà.
+  És comparable i mostrable.
+-}
+data Ma = NewM [Carta] deriving Eq
 
-instance Show Ma where --Fer Ma mostrable
+instance Show Ma where
   show (NewM []) = "{}"
   show (NewM (x:xs)) = ("{" ++ (show x) ++ "-" ++ (show2 (NewM xs)) ++ "}")
---Funcio auxiliar per a fer el Show de la ma.
-show2 :: Ma->String
+
+-- Funció auxiliar per a fer el Show de la ma.
+show2 :: Ma -> String
 show2 (NewM []) = ""
 show2 (NewM (x:[])) = (show x)
 show2 (NewM (x:xs)) = ((show x) ++ "-" ++ (show2 (NewM xs)))
 
---Basa: Representació d'una ronda de tirades dels 4 jugadors
+{--- BASA: Representació d'una ronda de tirades dels 4 jugadors ----
+  La Basa sempre conté quatre cartes i és iniciada per un jugador.
+  És comparable.
+-}
 data Basa = NewB (Integer, Carta, Carta, Carta, Carta) deriving Eq
 
 instance Show Basa where --Fer Basa mostrable.
   show (NewB (j,w,x,y,z))= ("Tirada iniciada per el jugador: " ++ (show j) ++ "\n" ++ "  Tirada 1: " ++ (show w) ++ "\n" ++ "  Tirada 2: " ++ (show x) ++ "\n" ++ "  Tirada 3: " ++ (show y) ++ "\n" ++ "  Tirada 4: " ++ (show z))
 
---Funcions Auxiliars
---getCardValue: Retorna el valor numèric del Tipuscarta.
+--------------------------
+--- Funcions Auxiliars ---
+--------------------------
+
+{- getCardValue
+  Input: Un TipusCarta
+  Output: Valor numèric corresponent al tipus de la carta
+-}
 getCardValue :: TipusCarta ->  Integer
 getCardValue tipus = case tipus of
       Manilla -> 12
@@ -66,7 +100,10 @@ getCardValue tipus = case tipus of
       Tres -> 2
       Dos -> 1
 
---getCardPunctuation: Retorna el valor numèric de la puntuació del TipusCarta
+{- getCardPunctuation
+  Input: El TipusCarta
+  Output: El valor numèric corresponent a la puntuació d'aquest TipusCarta
+-}
 getCardPunctuation :: TipusCarta ->  Integer
 getCardPunctuation tipus = case tipus of
       Sota -> 1
@@ -76,21 +113,33 @@ getCardPunctuation tipus = case tipus of
       Manilla -> 5
       otherwise -> 0
 
---punts: Retorna la suma del valor numèric de les cartes
-punts :: [Carta] -> Integer
-punts [] = 0
-punts ((NewC (p,t)):cv) = (getCardPunctuation t) + (punts cv)
+{- getPuntsCarta
+  Input: Conjunt de cartes
+  Output: Puntuació del conjunt de cartes
+-}
+getPuntsCarta :: [Carta] -> Integer
+getPuntsCarta [] = 0
+getPuntsCarta ((NewC (pal, tipus)):cv) = (getCardPunctuation tipus) + (getPuntsCarta cv)
 
---getPal: Retorna el pal d'una carta
+{- getPal
+  Input: Una Carta.
+  Output: Pal de la Carta.
+-}
 getPal :: Carta -> Pal
-getPal (NewC (p,t)) = p
+getPal (NewC (pal, tipus)) = pal
 
---getTipus: Retorna el tipus d'una Carta
+{- getTipus
+  Input: Una Carta.
+  Output: Tipus de la carta.
+-}
 getTipus :: Carta -> TipusCarta
-getTipus (NewC (p,t)) = t
+getTipus (NewC (pal, tipus)) = tipus
 
---cartesPalBasa: Retorna les cartes que son del Pal especificat en la Basa
-cartesPalBasa :: Basa->Pal->[Carta]
+{- cartesPalBasa
+  Input: Donada una Basa i el Pal
+  Output: Les cartes d'aquest Pal en la Basa
+-}
+cartesPalBasa :: Basa -> Pal -> [Carta]
 cartesPalBasa (NewB (j,w,x,y,z)) pal = [x | x<-[w,x,y,z], (pal == (getPal x))]
 
 --cartesPalMa: Retorna les cartes que son del Pal especificat en la ma
