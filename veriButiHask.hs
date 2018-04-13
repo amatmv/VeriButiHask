@@ -13,7 +13,7 @@ module VeriButihask where
 {-------- PAL: Pal de la basa ------
   És mostrable i comparable.
 -}
-data Pal = Orus | Bastos | Copes | Espases
+data Pal = Oros | Bastos | Copes | Espases
            deriving (Show, Eq)
 
 {-------- TRUMFU: Pal de la Ma ------
@@ -201,7 +201,7 @@ palGuanyadorBasa b t
 --trumfu2Pal
 trumfu2Pal :: Trumfu -> Pal
 trumfu2Pal trumfu = case trumfu of
-  Or -> Orus
+  Or -> Oros
   Ba -> Bastos
   Co -> Copes
   Es -> Espases
@@ -209,7 +209,7 @@ trumfu2Pal trumfu = case trumfu of
 
 pal2Trumfu :: Pal -> Trumfu
 pal2Trumfu pal = case pal of
-  Orus  -> Or
+  Oros  -> Or
   Bastos -> Ba
   Copes -> Co
   Espases -> Es
