@@ -115,13 +115,29 @@ getCardPunctuation tipus = case tipus of
       Manilla -> 5
       otherwise -> 0
 
-{- getPuntsCarta
+{- punts
   Input: Conjunt de cartes
   Output: Puntuació del conjunt de cartes
 -}
-getPuntsCarta :: [Carta] -> Integer
-getPuntsCarta [] = 0
-getPuntsCarta ((NewC (pal, tipus)):cv) = (getCardPunctuation tipus) + (getPuntsCarta cv)
+punts :: [Carta] -> Integer
+punts [] = 0
+punts ((NewC (pal, tipus)):cv) = (getCardPunctuation tipus) + (punts cv)
+
+{- cartesGuanyades
+  Input: Donat un trumfu, un conjunt de cartes i el numero de tirador inicial.
+  Output: Retorna una tupla que conté les cartes que ha guanyat cada grup
+-}
+cartesGuanyades :: Trumfu -> [Carta] -> Integer -> ([Carta],[Carta])
+cartesGuanyades trumfu [] _ = ([],[])
+cartesGuanyades trumfu (carta:xs) tirador
+  | (length xs) - 3 == 0 = if mod _guanyador 2 /= 0 then (fst _cas_base ++ _cartes_guanyades, snd _cas_base) else (fst _cas_base, snd _cas_base ++ _cartes_guanyades)
+  | mod ((length xs)+1) 3 == 0 = cartesGuanyades trumfu (drop 3 xs) _guanyador
+  | otherwise = error "Les cartes tirades han de ser múltiples de 4"
+  where
+    _cas_base = (cartesGuanyades trumfu [] 0)
+    _guanyador = jugadorGuanyaBasa _baseActual trumfu
+    _baseActual = (NewB (tirador, carta, xs !! 0, xs !! 1, xs !! 2))
+    _cartes_guanyades = cartesBasa (NewB (_guanyador, carta, xs !! 0, xs !! 1, xs !! 2))
 
 {- getPal
   Input: Una Carta.
