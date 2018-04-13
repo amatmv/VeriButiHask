@@ -1,26 +1,28 @@
-% Podeu afegir les següents constants al vostre codi, degudament transpormades les cartes als vostres tipus.
-% És una partida correcte tenint en compte que comença el jugador 1 i que el trumfu és Oros.
-% La puntuació per parelles és 37 i 35.
+% Podeu afegir les segï¿½ents constants al vostre codi, degudament transpormades les cartes als vostres tipus.
+% ï¿½s una partida correcte tenint en compte que comenï¿½a el jugador 1 i que el trumfu ï¿½s Oros.
+% La puntuaciï¿½ per parelles ï¿½s 37 i 35.
 
 
 cartes1 =
  [
-  [Manilla de Bastos, Vuit de Bastos, Tres d'Espases, As de Copes, Quatre de Bastos, Cavall d'Espases, Set de Copes, As d'Oros, Cinc de Bastos, Sota de Copes, Quatre d'Espases, Set de Bastos],
-  [Sota de Bastos, Cavall de Bastos, Manilla d'Espases, Vuit de Copes, Cinc d'Oros, Vuit d'Espases, Manilla de Copes, Sis d'Oros, Sota d'Oros, Cinc de Copes, Set d'Oros, Quatre de Copes],
-  [As de Bastos, Dos d'Oros, Rei d'Espases, Cavall de Copes, Vuit d'Oros, As d'Espases, Rei de Copes, Rei d'Oros, Tres de Copes, Sis de Copes, Sis d'Espases, Cinc d'Espases],
-  [Dos de Bastos, Tres de Bastos, Dos d'Espases, Dos de Copes, Sis de Bastos, Set d'Espases, Tres d'Oros, Quatre d'Oros, Rei de Bastos, Cavall d'Oros, Manilla d'Oros, Sota d'Espases]
+  [NewC(Bastos, Manilla), NewC(Bastos, Vuit), NewC(Espases, Tres), NewC(Copes, As), NewC(Bastos, Quatre), NewC(Espases, Cavall), NewC(Copes, Set), NewC(Oros, As), NewC(Bastos, Cinc), NewC(Copes, Sota), NewC(Espases, Quatre), NewC(Bastos, Set)],
+  [NewC(Bastos, Sota), NewC(Bastos, Cavall), NewC(Espases, Manilla), NewC(Copes, Vuit), NewC(Oros, Cinc), NewC(Espases, Vuit), NewC(Copes, Manilla), NewC(Oros, Sis), NewC(Oros, Sota), NewC(Copes, Cinc), NewC(Oros, Set), NewC(Copes, Quatre)],
+  [NewC(Bastos, As), NewC(Oros, Dos), NewC(Espases, Rei), NewC(Copes, Cavall), NewC(Oros, Vuit), NewC(Espases, As), NewC(Copes, Rei), NewC(Oros, Rei), NewC(Copes, Tres), NewC(Copes, Sis), NewC(Espases, Sis), NewC(Espases, Cinc)],
+  [NewC(Bastos, Dos), NewC(Bastos, Tres), NewC(Espases, Dos), NewC(Copes, Dos), NewC(Bastos, Sis), NewC(Espases, Set), NewC(Oros, Tres), NewC(Oros, Quatre), NewC(Bastos, Rei), NewC(Oros, Cavall), NewC(Oros, Manilla), NewC(Espases, Sota)]
  ]
 
+
+
  partida1 = [
-	 Manilla de Bastos, Sota de Bastos, As de Bastos, Dos de Bastos,
-	 Vuit de Bastos, Cavall de Bastos, Dos d'Oros, Tres de Bastos,
-	 Rei d'Espases, Dos d'Espases, Tres d'Espases, Manilla d'Espases,
-	 Vuit de Copes, Cavall de Copes, Dos de Copes, As de Copes,
-	 Quatre de Bastos, Cinc d'Oros, Vuit d'Oros, Sis de Bastos,
-	 As d'Espases, Set d'Espases, Cavall d'Espases, Vuit d'Espases,
-	 Rei de Copes, Tres d'Oros, Set de Copes, Manilla de Copes,
-	 Quatre d'Oros, As d'Oros, Sis d'Oros, Rei d'Oros,
-	 Cinc de Bastos, Sota d'Oros, Tres de Copes, Rei de Bastos,
-	 Cinc de Copes, Sis de Copes, Cavall d'Oros, Sota de Copes,
-	 Manilla d'Oros, Quatre d'Espases, Set d'Oros, Sis d'Espases,
-	 Sota d'Espases, Set de Bastos, Quatre de Copes, Cinc d'Espases]
+	 Manilla Bastos, Sota Bastos, As Bastos, Dos Bastos,
+	 Vuit Bastos, Cavall Bastos, Dos Oros, Tres Bastos,
+	 Rei Espases, Dos Espases, Tres Espases, Manilla Espases,
+	 Vuit Copes, Cavall Copes, Dos Copes, As Copes,
+	 Quatre Bastos, Cinc Oros, Vuit Oros, Sis Bastos,
+	 As Espases, Set Espases, Cavall Espases, Vuit Espases,
+	 Rei Copes, Tres Oros, Set Copes, Manilla Copes,
+	 Quatre Oros, As Oros, Sis Oros, Rei Oros,
+	 Cinc Bastos, Sota Oros, Tres Copes, Rei Bastos,
+	 Cinc Copes, Sis Copes, Cavall Oros, Sota Copes,
+	 Manilla Oros, Quatre Espases, Set Oros, Sis Espases,
+	 Sota Espases, Set Bastos, Quatre Copes, Cinc Espases]
