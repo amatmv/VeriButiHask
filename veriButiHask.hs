@@ -4,6 +4,8 @@
 {--                                                         --}
 {-------------------------------------------------------------}
 
+module VeriButihask where
+
 --------------------------
 -- Definicions de tipus --
 --------------------------
@@ -44,7 +46,7 @@ instance Eq Carta where
   (NewC (p1,t1)) == (NewC (p2,t2)) = (t1 == t2)
 
 instance Show Carta where
-  show (NewC (pal, tipus)) =  "["++ ((show tipus) ++ " " ++ (show pal)) ++ "]"
+  show (NewC (pal, tipus)) =  ((show tipus) ++ (if (show pal) !! 0 `elem` ['A', 'E', 'I', 'O', 'U'] then " d\'" else " de ") ++ (show pal))
 
 instance Ord Carta where
   compare (NewC (p1,t1)) (NewC (p2,t2))
