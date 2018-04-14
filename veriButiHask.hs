@@ -261,3 +261,39 @@ tiradorCarta c b
   | (c == (basa2 b)) = mod ((iniciadorBasa b)+1) 4
   | (c == (basa3 b)) = mod ((iniciadorBasa b)+2) 4
   | (c == (basa4 b)) = mod ((iniciadorBasa b)+3) 4
+
+  
+--trampa:: [Ma] -> Trumfu -> [Carta] -> Int -> Maybe ([Carta],Int, Int)
+
+--jugadesPossibles:: Ma->Trumfu->Basa->[Carta] 
+--jugadesPossibles (NewM llista) t b
+
+-- Ma: ma del jugador  -- Trunfu: pal dominant de la partida -- [Carta] cartes de la base pot ser buida -- Return [Carta] possibles cartes
+-- Si cartes basa buida podem tirar qualsevol
+-- Si cartes basa size 1 (obligats a matar si podem):
+		-- Si tenim del mateix pal i podem matar qualsevol que pugui matar
+		-- si fallem tirem qualsevol trunfo si tenim
+		-- si tampoc tenim trunfo tirem qualsevol
+-- Si cartes basa size 2 hem de mirar si el company [0] esta guanyant o no:
+		-- Si company esta guanyant podem tirar qualsevol carta del mateix pal que a tirat i si fallem qualsevol altre
+		-- altrament 
+			-- si [1] no ha fallat hem de matar si podem amb cartes del mateix pal sino hem de tirar trunfo si tenim sino qualsevol
+			-- si [1] ha fallat (amb trunfo) i tenim encara cartes del pal iniciador podem tirar qualsevol del pal
+			-- Si [1] ha fallat (amb trunfo) i fallem tambe hem de matar amb trunfu si podem altrament qualsevol 
+			
+-- Si cartes base size 3 (el nostre company es [1]):
+		-- si el company [1] esta guanyant podem tirar qualsevol carta del mateix pal que a tirat i si fallem qualsevol altre
+		-- Altrament:
+			-- mirem quina carta esta guanyant(Hem de matar si podem):
+				-- Si esta guanyant una carta del mateix pal que ha tirat el company:
+					-- si tenim d'aquell pal i podem matar nomes podem tirar aquestes altrament si fallem trunfu si tenim altrament qualsevol
+				-- si esta guanyant un fallo (de trunfo):
+					-- si tenim del pal de la base qualsevol del pal
+					-- Si fallem i tenim un trunfo que pugui matar qualsevol trunfo que pugui matar
+					-- altrament qualsevol carta
+realJugadesPossibles::Ma->Trunfu->[Carta]->[Carta]
+realJugadesPossibles (NewM llista) _ [] = [x | x<-llista] -- Si no s'ha tirat cap carta començem nosaltres i podem tirar qualsevol carta
+realJugadesPossibles (NewM llista) t (x:xs)
+  | (length xs + 1 == 1) = if cartesPalMa getPal x == [] then [c | c<-llista] else cartesPalMa getPal x
+  | (length xs + 1 == 2) =
+  | (length xs + 1 == 3) =
