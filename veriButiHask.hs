@@ -268,6 +268,17 @@ tiradorCarta c b
 --jugadesPossibles:: Ma->Trumfu->Basa->[Carta] 
 --jugadesPossibles (NewM llista) t b
 
+FiltrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal :: [Carta] -> Carta -> [Carta]
+FiltrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal l c 
+  | (filter (>c) l == []) = l
+  | otherwise = (filter (>c) l
+
+
+filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes :: [Carta] -> Carta -> Trunfu -> [Carta]
+filtrarGuanyadores l c t
+  | ([x | x<-l, (t == (getPal x))] == []) = l
+  | otherwise [x | x<-l, (t == (getPal x))]
+
 -- Ma: ma del jugador  -- Trunfu: pal dominant de la partida -- [Carta] cartes de la base pot ser buida -- Return [Carta] possibles cartes
 -- Si cartes basa buida podem tirar qualsevol
 -- Si cartes basa size 1 (obligats a matar si podem):
@@ -294,6 +305,6 @@ tiradorCarta c b
 realJugadesPossibles::Ma->Trunfu->[Carta]->[Carta]
 realJugadesPossibles (NewM llista) _ [] = [x | x<-llista] -- Si no s'ha tirat cap carta començem nosaltres i podem tirar qualsevol carta
 realJugadesPossibles (NewM llista) t (x:xs)
-  | (length xs + 1 == 1) = if cartesPalMa getPal x == [] then [c | c<-llista] else cartesPalMa getPal x
+  | (length xs + 1 == 1) = if cartesPalMa getPal x == [] then filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes [c | c<-llista] x t else FiltrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal (cartesPalMa getPal x) x --tpdo filtrar per cartes superiors
   | (length xs + 1 == 2) =
   | (length xs + 1 == 3) =
