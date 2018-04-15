@@ -275,7 +275,7 @@ FiltrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal l c
 
 
 filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes :: [Carta] -> Carta -> Trunfu -> [Carta]
-filtrarGuanyadores l c t
+filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes l c t
   | ([x | x<-l, (t == (getPal x))] == []) = l
   | otherwise [x | x<-l, (t == (getPal x))]
 
