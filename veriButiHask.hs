@@ -3,8 +3,11 @@
 {--  IMPLEMENTACIÓ D'UN VALIDADOR DE PARTIDES DE BUTIFARRA  --}
 {--                                                         --}
 {-------------------------------------------------------------}
-
-module VeriButihask where
+import System.Random
+import Data.Array.ST
+import Control.Monad
+import Control.Monad.ST
+import Data.STRef
 
 --------------------------
 -- Definicions de tipus --
@@ -79,9 +82,48 @@ data Basa = NewB (Integer, Carta, Carta, Carta, Carta) deriving Eq
 instance Show Basa where --Fer Basa mostrable.
   show (NewB (j,w,x,y,z))= ("Tirada iniciada per el jugador: " ++ (show j) ++ "\n" ++ "  Tirada 1: " ++ (show w) ++ "\n" ++ "  Tirada 2: " ++ (show x) ++ "\n" ++ "  Tirada 3: " ++ (show y) ++ "\n" ++ "  Tirada 4: " ++ (show z))
 
+-------------------------------
+--- Definicio de la baralla ---
+-------------------------------
+
+baralla = [NewC(Oros, As), NewC(Oros, Dos), NewC(Oros, Tres), NewC(Oros, Quatre), NewC(Oros, Cinc), NewC(Oros, Sis), NewC(Oros, Set), NewC(Oros, Vuit), NewC(Oros, Manilla), NewC(Oros, Sota), NewC(Oros, Cavall), NewC(Oros, Rei), NewC(Espases, As), NewC(Espases, Dos), NewC(Espases, Tres), NewC(Espases, Quatre), NewC(Espases, Cinc), NewC(Espases, Sis), NewC(Espases, Set), NewC(Espases, Vuit), NewC(Espases, Manilla), NewC(Espases, Sota), NewC(Espases, Cavall), NewC(Espases, Rei), NewC(Bastos, As), NewC(Bastos, Dos), NewC(Bastos, Tres), NewC(Bastos, Quatre), NewC(Bastos, Cinc), NewC(Bastos, Sis), NewC(Bastos, Set), NewC(Bastos, Vuit), NewC(Bastos, Manilla), NewC(Bastos, Sota), NewC(Bastos, Cavall), NewC(Bastos, Rei), NewC(Copes, As), NewC(Copes, Dos), NewC(Copes, Tres), NewC(Copes, Quatre), NewC(Copes, Cinc), NewC(Copes, Sis), NewC(Copes, Set), NewC(Copes, Vuit), NewC(Copes, Manilla), NewC(Copes, Sota), NewC(Copes, Cavall), NewC(Copes, Rei)]
+
+----------------------
+--- Loop principal ---
+----------------------
+main = do
+  putStrLn "Entra la llavor: "
+  llavor <- getLine
+  print (fst (shuffle' baralla (mkStdGen (read llavor::Int))))
+
+
+
 --------------------------
 --- Funcions Auxiliars ---
 --------------------------
+
+-- | Randomly shuffle a list without the IO Monad
+--   /O(N)/
+shuffle' :: [a] -> StdGen -> ([a],StdGen)
+shuffle' xs gen = runST (do
+        g <- newSTRef gen
+        let randomRST lohi = do
+              (a,s') <- liftM (randomR lohi) (readSTRef g)
+              writeSTRef g s'
+              return a
+        ar <- newArray n xs
+        xs' <- forM [1..n] $ \i -> do
+                j <- randomRST (i,n)
+                vi <- readArray ar i
+                vj <- readArray ar j
+                writeArray ar j vi
+                return vj
+        gen' <- readSTRef g
+        return (xs',gen'))
+  where
+    n = length xs
+    newArray :: Int -> [a] -> ST s (STArray s Int a)
+    newArray n xs =  newListArray (1,n) xs
 
 {- getCardValue
   Input: Un TipusCarta
@@ -262,14 +304,14 @@ tiradorCarta c b
   | (c == (basa3 b)) = mod ((iniciadorBasa b)+2) 4
   | (c == (basa4 b)) = mod ((iniciadorBasa b)+3) 4
 
-  
+
 --trampa:: [Ma] -> Trumfu -> [Carta] -> Int -> Maybe ([Carta],Int, Int)
 
---jugadesPossibles:: Ma->Trumfu->Basa->[Carta] 
+--jugadesPossibles:: Ma->Trumfu->Basa->[Carta]
 --jugadesPossibles (NewM llista) t b
 
 FiltrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal :: [Carta] -> Carta -> [Carta]
-FiltrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal l c 
+FiltrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal l c
   | (filter (>c) l == []) = l
   | otherwise = (filter (>c) l
 
@@ -298,11 +340,11 @@ quiEstaGuanyant :: m (x:xs) t
 		-- si tampoc tenim trunfo tirem qualsevol
 -- Si cartes basa size 2 hem de mirar si el company [0] esta guanyant o no:
 		-- Si company esta guanyant podem tirar qualsevol carta del mateix pal que a tirat i si fallem qualsevol altre
-		-- altrament 
+		-- altrament
 			-- si [1] no ha fallat hem de matar si podem amb cartes del mateix pal sino hem de tirar trunfo si tenim sino qualsevol
 			-- si [1] ha fallat (amb trunfo) i tenim encara cartes del pal iniciador podem tirar qualsevol del pal
-			-- Si [1] ha fallat (amb trunfo) i fallem tambe hem de matar amb trunfu si podem altrament qualsevol 
-			
+			-- Si [1] ha fallat (amb trunfo) i fallem tambe hem de matar amb trunfu si podem altrament qualsevol
+
 -- Si cartes base size 3 (el nostre company es [1]):
 		-- si el company [1] esta guanyant podem tirar qualsevol carta del mateix pal que a tirat i si fallem qualsevol altre
 		-- Altrament:
