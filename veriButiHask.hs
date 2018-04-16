@@ -276,9 +276,20 @@ FiltrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal l c
 
 filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes :: [Carta] -> Carta -> Trunfu -> [Carta]
 filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes l c t
-  | ([x | x<-l, (t == (getPal x))] == []) = l
-  | otherwise [x | x<-l, (t == (getPal x))]
+  | ([x | x<-l, (trumfu2Pal t == (getPal x))] == []) = l
+  | otherwise [x | x<-l, (trumfu2Pal t == (getPal x))]
 
+-- Donat un enter (mida llista 2 o 3), una llista de cartes i el trunfo retorna el jugador segons ordre de tirada que esta guanyant
+quiEstaGuanyant :: Integer -> [Carta] -> Trunfu -> Integer
+quiEstaGuanyant :: m (x:xs) t
+  | (m == 2) && (getPal x == getPal head xs) = if x > head xs then 1 else 2 
+  | (m == 2) && (getPal x /= getPal head xs) = if getPal x == trumfu2Pal t then 1
+												else if getPal head xs == trumfu2Pal t then 2
+												else 1
+  | (m == 3) && (quiEstaGuanyant 2 (take 2 (x:xs)) t == 1) = if quiEstaGuanyant 2 (x:(tail x:xs)) t == 1 then 1 else 3 
+  | (m == 3) && (quiEstaGuanyant 2 (take 2 (x:xs)) t == 2) = if quiEstaGuanyant 2 xs t == 1 then 2 else 3 
+
+  
 -- Ma: ma del jugador  -- Trunfu: pal dominant de la partida -- [Carta] cartes de la base pot ser buida -- Return [Carta] possibles cartes
 -- Si cartes basa buida podem tirar qualsevol
 -- Si cartes basa size 1 (obligats a matar si podem):
@@ -302,7 +313,7 @@ filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes l c t
 					-- si tenim del pal de la base qualsevol del pal
 					-- Si fallem i tenim un trunfo que pugui matar qualsevol trunfo que pugui matar
 					-- altrament qualsevol carta
-realJugadesPossibles::Ma->Trunfu->[Carta]->[Carta]
+realJugadesPossibles :: Ma -> Trunfu -> [Carta] -> [Carta]
 realJugadesPossibles (NewM llista) _ [] = [x | x<-llista] -- Si no s'ha tirat cap carta començem nosaltres i podem tirar qualsevol carta
 realJugadesPossibles (NewM llista) t (x:xs)
   | (length xs + 1 == 1) = if cartesPalMa getPal x == [] then filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes [c | c<-llista] x t else FiltrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal (cartesPalMa getPal x) x
