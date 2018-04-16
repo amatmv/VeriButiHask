@@ -328,7 +328,7 @@ quiEstaGuanyant :: m (x:xs) t
   | (m == 2) && (getPal x /= getPal head xs) = if getPal x == trumfu2Pal t then 1
 												else if getPal head xs == trumfu2Pal t then 2
 												else 1
-  | (m == 3) && (quiEstaGuanyant 2 (take 2 (x:xs)) t == 1) = if quiEstaGuanyant 2 (x:(tail x:xs)) t == 1 then 1 else 3 
+  | (m == 3) && (quiEstaGuanyant 2 (take 2 (x:xs)) t == 1) = if quiEstaGuanyant 2 (x:(tail (x:xs))) t == 1 then 1 else 3 
   | (m == 3) && (quiEstaGuanyant 2 (take 2 (x:xs)) t == 2) = if quiEstaGuanyant 2 xs t == 1 then 2 else 3 
 
   
