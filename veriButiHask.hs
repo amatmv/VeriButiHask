@@ -358,7 +358,7 @@ quiEstaGuanyant :: m (x:xs) t
 realJugadesPossibles :: Ma -> Trunfu -> [Carta] -> [Carta]
 realJugadesPossibles (NewM llista) _ [] = [x | x<-llista] -- Si no s'ha tirat cap carta començem nosaltres i podem tirar qualsevol carta
 realJugadesPossibles (NewM llista) t (x:xs)
-  | (length xs + 1 == 1) = if cartesPalMa getPal x == [] then filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes [c | c<-llista] x t else FiltrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal (cartesPalMa llista (getPal x)) x
-  | (length xs + 1 == 2) && (quiEstaGuanyant 2 (x:xs) t == 2) = if cartesPalMa getPal x == [] then filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes [c | c<-llista] x t else FiltrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal (cartesPalMa llista (getPal x)) x
-  | (length xs + 1 == 2) && (quiEstaGuanyant 2 (x:xs) t == 1) = if cartesPalMa getPal x == [] then [c | c<-llista] else cartesPalMa getPal x
+  | (length xs + 1 == 1) = if cartesPalMa llista getPal x == [] then filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes [c | c<-llista] x t else FiltrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal (cartesPalMa llista (getPal x)) x
+  | (length xs + 1 == 2) && (quiEstaGuanyant 2 (x:xs) t == 2) = if cartesPalMa llista getPal x == [] then filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes [c | c<-llista] x t else FiltrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal (cartesPalMa llista (getPal x)) x
+  | (length xs + 1 == 2) && (quiEstaGuanyant 2 (x:xs) t == 1) = if cartesPalMa llista getPal x == [] then [c | c<-llista] else cartesPalMa llista getPal x
   | (length xs + 1 == 3) =
