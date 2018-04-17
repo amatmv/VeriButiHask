@@ -366,10 +366,10 @@ filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes l c t
 
 -- Donat un enter (mida llista 2 o 3), una llista de cartes i el trunfo retorna el jugador segons ordre de tirada que esta guanyant
 quiEstaGuanyant :: Integer -> [Carta] -> Trumfu -> Integer
-quiEstaGuanyant :: m (x:xs) t
-  | (m == 2) && (getPal x == getPal head xs) = if x > head xs then 1 else 2 
-  | (m == 2) && (getPal x /= getPal head xs) = if getPal x == trumfu2Pal t then 1
-												else if getPal head xs == trumfu2Pal t then 2
+quiEstaGuanyant m (x:xs) t
+  | (m == 2) && (getPal x == getPal (head xs)) = if x > head xs then 1 else 2 
+  | (m == 2) && (getPal x /= getPal (head xs)) = if getPal x == trumfu2Pal t then 1
+												else if getPal (head xs) == trumfu2Pal t then 2
 												else 1
   | (m == 3) && (quiEstaGuanyant 2 (take 2 (x:xs)) t == 1) = if quiEstaGuanyant 2 (x:(tail (x:xs))) t == 1 then 1 else 3 
   | (m == 3) && (quiEstaGuanyant 2 (take 2 (x:xs)) t == 2) = if quiEstaGuanyant 2 xs t == 1 then 2 else 3 
