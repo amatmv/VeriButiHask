@@ -91,16 +91,60 @@ baralla = [NewC(Oros, As), NewC(Oros, Dos), NewC(Oros, Tres), NewC(Oros, Quatre)
 ----------------------
 --- Loop principal ---
 ----------------------
-main = do
-  putStrLn "Entra la llavor: "
+jugar = do
+  putStrLn "--------------------"
+  putStrLn "--- VeriButiHask ---"
+  putStrLn "--------------------"
+  putStrLn "Entra una llavor per a generar la baralla: "
   llavor <- getLine
-  print (fst (shuffle' baralla (mkStdGen (read llavor::Int))))
+  putStrLn "S'ha generat la baralla. "
+  putStrLn " "
+  putStrLn "Procedint a inicialitzar la partida..."
+  putStrLn "Repartint les cartes..."
+  -- print(crearMans(repartirCartes (fst (shuffle' baralla (mkStdGen (read llavor::Int))))))
+  let mans = crearMans(repartirCartes (fst (shuffle' baralla (mkStdGen (read llavor::Int)))))
+  let ma1 = (mans !! 0)
+  let ma2 = (mans !! 1)
+  let ma3 = (mans !! 2)
+  let ma4 = (mans !! 3)
+  -- putStrLn "Ma 1: "
+  -- print(ma1)
+  -- putStrLn "Ma 2: "
+  -- print(ma2)
+  -- putStrLn "Ma 3: "
+  -- print(ma3)
+  -- putStrLn "Ma 4: "
+  -- print(ma4)
+  putStrLn "Cartes repartides als jugadors!"
+  putStrLn "La teva ma és la següent: "
+  putStrLn " "
+  print(ma1)
+  putStrLn " "
+  putStrLn "------   COMENÇA LA PARTIDA   ------"
+  mainLoop
+  putStrLn "End Exec"
 
-
-
+mainLoop = do
+  print("Blyat?")
+  ent <- getLine
+  let input = (read ent)
+  if input == "Blyat"
+    then do putStrLn "GG WP"
+            mainLoop
+    else do putStrLn "Surrender"
 --------------------------
 --- Funcions Auxiliars ---
 --------------------------
+
+crearMans :: [[Carta]] -> [Ma]
+crearMans llista = [(NewM (llista !! 0)),(NewM (llista !! 1)),(NewM (llista !! 2)),(NewM (llista !! 3))]
+
+repartirCartes :: [Carta] -> [[Carta]]
+repartirCartes (w:x:y:z:xs) = repartirCartes' [[w],[x],[y],[z]] xs
+
+repartirCartes' :: [[Carta]] -> [Carta] -> [[Carta]]
+repartirCartes' llista [] = llista
+repartirCartes' llista (w:x:y:z:xs) = repartirCartes' [((llista !! 0) ++ [w]), ((llista !! 1) ++ [x]), ((llista !! 2) ++ [y]), ((llista !! 3) ++ [z])] xs
 
 -- | Randomly shuffle a list without the IO Monad
 --   /O(N)/
