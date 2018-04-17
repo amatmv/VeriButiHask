@@ -313,13 +313,12 @@ tiradorCarta c b
 filtrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal :: [Carta] -> Carta -> [Carta]
 filtrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal l c
   | (filter (>c) l == []) = l
-  | otherwise = (filter (>c) l
+  | otherwise = (filter (>c) l)
 
-
-filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes :: [Carta] -> Carta -> Trunfu -> [Carta]
+filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes :: [Carta] -> Carta -> Trumfu -> [Carta]
 filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes l c t
   | ([x | x<-l, (trumfu2Pal t == (getPal x))] == []) = l
-  | otherwise [x | x<-l, (trumfu2Pal t == (getPal x))]
+  | otherwise = [x | x<-l, (trumfu2Pal t == (getPal x))]
 
 -- Donat un enter (mida llista 2 o 3), una llista de cartes i el trunfo retorna el jugador segons ordre de tirada que esta guanyant
 quiEstaGuanyant :: Integer -> [Carta] -> Trunfu -> Integer
@@ -355,7 +354,7 @@ quiEstaGuanyant :: m (x:xs) t
 					-- si tenim del pal de la base qualsevol del pal
 					-- Si fallem i tenim un trunfo que pugui matar qualsevol trunfo que pugui matar
 					-- altrament qualsevol carta
-realJugadesPossibles :: Ma -> Trunfu -> [Carta] -> [Carta]
+realJugadesPossibles :: Ma -> Trumfu -> [Carta] -> [Carta]
 realJugadesPossibles (NewM llista) _ [] = [x | x<-llista] -- Si no s'ha tirat cap carta començem nosaltres i podem tirar qualsevol carta
 realJugadesPossibles (NewM llista) t (x:xs)
   | (length xs + 1 == 1) = if cartesPalMa llista (getPal x) == [] then filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes [c | c<-llista] x t else filtrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal (cartesPalMa llista (getPal x)) x
