@@ -152,8 +152,8 @@ shuffle (carta:[]) llavor = [carta]
 shuffle (carta:cs) llavor = (cartes !! rand) : shuffle (delete rand cartes) llavor
     where
       cartes = (carta:cs)
-      rand = mod unsafePartiallyRandom llavor
-      unsafePartiallyRandom = (unsafePerformIO (getStdRandom (randomR (0, (length cartes)-1))))
+      rand = mod unsafeIORandom llavor
+      unsafeIORandom = (unsafePerformIO (getStdRandom (randomR (0, (length cartes)-1))))
       delete :: Int -> [Carta] -> [Carta]
       delete n c = (fst $ splitAt n c) ++ (tail $ snd $ splitAt n c)
 
