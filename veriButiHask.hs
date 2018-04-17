@@ -368,9 +368,9 @@ filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes l c t
 quiEstaGuanyant :: Integer -> [Carta] -> Trumfu -> Integer
 quiEstaGuanyant m (x:xs) t
   | (m == 2) && (getPal x == getPal (head xs)) = if x > head xs then 1 else 2 
-  | (m == 2) && (getPal x /= getPal (head xs)) = if getPal x == trumfu2Pal t then 1
-												else if getPal (head xs) == trumfu2Pal t then 2
-												else 1
+  | (m == 2) && (getPal x /= getPal (head xs)) = if getPal x == trumfu2Pal t then 1 
+                                                 else if getPal (head xs) == trumfu2Pal t then 2 
+                                                 else 1
   | (m == 3) && (quiEstaGuanyant 2 (take 2 (x:xs)) t == 1) = if quiEstaGuanyant 2 (x:(tail (x:xs))) t == 1 then 1 else 3 
   | (m == 3) && (quiEstaGuanyant 2 (take 2 (x:xs)) t == 2) = if quiEstaGuanyant 2 xs t == 1 then 2 else 3 
 
@@ -378,30 +378,30 @@ quiEstaGuanyant m (x:xs) t
 -- Ma: ma del jugador  -- Trunfu: pal dominant de la partida -- [Carta] cartes de la base pot ser buida -- Return [Carta] possibles cartes
 -- Si cartes basa buida podem tirar qualsevol
 -- Si cartes basa size 1 (obligats a matar si podem):
-		-- Si tenim del mateix pal i podem matar qualsevol que pugui matar
-		-- si fallem tirem qualsevol trunfo si tenim
-		-- si tampoc tenim trunfo tirem qualsevol
+        -- Si tenim del mateix pal i podem matar qualsevol que pugui matar
+        -- si fallem tirem qualsevol trunfo si tenim
+        -- si tampoc tenim trunfo tirem qualsevol
 -- Si cartes basa size 2 hem de mirar si el company [0] esta guanyant o no:
-		-- Si company esta guanyant podem tirar qualsevol carta del mateix pal que a tirat i si fallem qualsevol altre
-		-- altrament
-			-- si [1] no ha fallat hem de matar si podem amb cartes del mateix pal sino hem de tirar trunfo si tenim sino qualsevol
-			-- si [1] ha fallat (amb trunfo) i tenim encara cartes del pal iniciador podem tirar qualsevol del pal
-			-- Si [1] ha fallat (amb trunfo) i fallem tambe hem de matar amb trunfu si podem altrament qualsevol
+        -- Si company esta guanyant podem tirar qualsevol carta del mateix pal que a tirat i si fallem qualsevol altre
+        -- altrament
+            -- si [1] no ha fallat hem de matar si podem amb cartes del mateix pal sino hem de tirar trunfo si tenim sino qualsevol
+            -- si [1] ha fallat (amb trunfo) i tenim encara cartes del pal iniciador podem tirar qualsevol del pal
+            -- Si [1] ha fallat (amb trunfo) i fallem tambe hem de matar amb trunfu si podem altrament qualsevol
 
 -- Si cartes base size 3 (el nostre company es [1]):
-		-- si el company [1] esta guanyant podem tirar qualsevol carta del mateix pal que a tirat i si fallem qualsevol altre
-		-- Altrament:
-			-- mirem quina carta esta guanyant(Hem de matar si podem):
-				-- Si esta guanyant una carta del mateix pal que ha tirat el company:
-					-- si tenim d'aquell pal i podem matar nomes podem tirar aquestes altrament si fallem trunfu si tenim altrament qualsevol
-				-- si esta guanyant un fallo (de trunfo):
-					-- si tenim del pal de la base qualsevol del pal
-					-- Si fallem i tenim un trunfo que pugui matar qualsevol trunfo que pugui matar
-					-- altrament qualsevol carta
+        -- si el company [1] esta guanyant podem tirar qualsevol carta del mateix pal que a tirat i si fallem qualsevol altre
+        -- Altrament:
+        -- mirem quina carta esta guanyant(Hem de matar si podem):
+                -- Si esta guanyant una carta del mateix pal que ha tirat el company:
+                    -- si tenim d'aquell pal i podem matar nomes podem tirar aquestes altrament si fallem trunfu si tenim altrament qualsevol
+                    -- si esta guanyant un fallo (de trunfo):
+                    -- si tenim del pal de la base qualsevol del pal
+                    -- Si fallem i tenim un trunfo que pugui matar qualsevol trunfo que pugui matar
+                    -- altrament qualsevol carta
 realJugadesPossibles :: Ma -> Trumfu -> [Carta] -> [Carta]
 realJugadesPossibles (NewM llista) _ [] = [x | x<-llista] -- Si no s'ha tirat cap carta començem nosaltres i podem tirar qualsevol carta
 realJugadesPossibles (NewM llista) t (x:xs)
-  | (length xs + 1 == 1) = if cartesPalMa llista (getPal x) == [] then filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes [c | c<-llista] x t else filtrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal (cartesPalMa llista (getPal x)) x
-  | (length xs + 1 == 2) && (quiEstaGuanyant 2 (x:xs) t == 2) = if cartesPalMa llista (getPal x) == [] then filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes [c | c<-llista] x t else filtrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal (cartesPalMa llista (getPal x)) x
-  | (length xs + 1 == 2) && (quiEstaGuanyant 2 (x:xs) t == 1) = if cartesPalMa llista (getPal x) == [] then [c | c<-llista] else cartesPalMa llista (getPal x)
+  | (length xs + 1 == 1) = if cartesPalMa (NewM llista) (getPal x) == [] then filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes [c | c<-llista] x t else filtrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal (cartesPalMa (NewM llista) (getPal x)) x
+  | (length xs + 1 == 2) && (quiEstaGuanyant 2 (x:xs) t == 2) = if cartesPalMa (NewM llista) (getPal x) == [] then filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes [c | c<-llista] x t else filtrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal (cartesPalMa (NewM llista) (getPal x)) x
+  | (length xs + 1 == 2) && (quiEstaGuanyant 2 (x:xs) t == 1) = if cartesPalMa (NewM llista) (getPal x) == [] then [c | c<-llista] else cartesPalMa (NewM llista) (getPal x)
   | (length xs + 1 == 3) = []--[x | x<-llista]
