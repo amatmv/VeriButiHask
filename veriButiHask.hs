@@ -216,14 +216,22 @@ punts ((NewC (pal, tipus)):cv) = (getCardPunctuation tipus) + (punts cv)
 cartesGuanyades :: Trumfu -> [Carta] -> Integer -> ([Carta],[Carta])
 cartesGuanyades trumfu [] _ = ([],[])
 cartesGuanyades trumfu (carta:xs) tirador
-  | (length xs) - 3 == 0 = if mod _guanyador 2 /= 0 then (fst _cas_base ++ _cartes_guanyades, snd _cas_base) else (fst _cas_base, snd _cas_base ++ _cartes_guanyades)
-  | mod ((length xs)+1) 3 == 0 = cartesGuanyades trumfu (drop 3 xs) _guanyador
-  | otherwise = error "Les cartes tirades han de ser múltiples de 4"
+  | not (nombreJugadorsCorrecte tirador) = error "Només hi ha 4 jugadors (1-4)"
+  | not (nombreCorrecteDeCartes (carta:xs)) = error "El nombre de cartes tirades ha de ser múltiples de 4"
+  | (length (carta:xs)) == 4  = if mod _guanyador 2 /= 0 then (fst _cas_base ++ _cartes_guanyades, snd _cas_base) else (fst _cas_base, snd _cas_base ++ _cartes_guanyades)
+  | mod (length (carta:xs)) 4 == 0 = cartesGuanyades trumfu (drop 4 (carta:xs)) _guanyador
+  | otherwise = error "Error desconegut"
   where
     _cas_base = (cartesGuanyades trumfu [] 0)
     _guanyador = jugadorGuanyaBasa _baseActual trumfu
     _baseActual = (NewB (tirador, carta, xs !! 0, xs !! 1, xs !! 2))
     _cartes_guanyades = cartesBasa (NewB (_guanyador, carta, xs !! 0, xs !! 1, xs !! 2))
+
+nombreCorrecteDeCartes :: [Carta] -> Bool
+nombreCorrecteDeCartes (carta:xs) = (mod (length (carta:xs)) 4) == 0
+
+nombreJugadorsCorrecte :: Integer -> Bool
+nombreJugadorsCorrecte jugadors = jugadors >= 1 && jugadors <= 4
 
 {- getPal
   Input: Una Carta.
@@ -367,14 +375,14 @@ filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes l c t
 -- Donat un enter (mida llista 2 o 3), una llista de cartes i el trunfo retorna el jugador segons ordre de tirada que esta guanyant
 quiEstaGuanyant :: Integer -> [Carta] -> Trumfu -> Integer
 quiEstaGuanyant m (x:xs) t
-  | (m == 2) && (getPal x == getPal (head xs)) = if x > head xs then 1 else 2 
-  | (m == 2) && (getPal x /= getPal (head xs)) = if getPal x == trumfu2Pal t then 1 
-                                                 else if getPal (head xs) == trumfu2Pal t then 2 
+  | (m == 2) && (getPal x == getPal (head xs)) = if x > head xs then 1 else 2
+  | (m == 2) && (getPal x /= getPal (head xs)) = if getPal x == trumfu2Pal t then 1
+                                                 else if getPal (head xs) == trumfu2Pal t then 2
                                                  else 1
-  | (m == 3) && (quiEstaGuanyant 2 (take 2 (x:xs)) t == 1) = if quiEstaGuanyant 2 (x:(tail (x:xs))) t == 1 then 1 else 3 
-  | (m == 3) && (quiEstaGuanyant 2 (take 2 (x:xs)) t == 2) = if quiEstaGuanyant 2 xs t == 1 then 2 else 3 
+  | (m == 3) && (quiEstaGuanyant 2 (take 2 (x:xs)) t == 1) = if quiEstaGuanyant 2 (x:(tail (x:xs))) t == 1 then 1 else 3
+  | (m == 3) && (quiEstaGuanyant 2 (take 2 (x:xs)) t == 2) = if quiEstaGuanyant 2 xs t == 1 then 2 else 3
 
-  
+
 -- Ma: ma del jugador  -- Trunfu: pal dominant de la partida -- [Carta] cartes de la base pot ser buida -- Return [Carta] possibles cartes
 -- Si cartes basa buida podem tirar qualsevol
 -- Si cartes basa size 1 (obligats a matar si podem):
