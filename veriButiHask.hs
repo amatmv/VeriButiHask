@@ -194,21 +194,44 @@ escollirTrumfu ma1 ma2 ma3 ma4 escollidor = do
 contrarTime trumfu ma1 ma2 ma3 ma4 escollidor = do
   if (escollidor == 1) || (escollidor == 3) then do
     if esContra2 trumfu ma2 ma4 then do --la maquina contra
+      putStrLn "La parella formada per el jugador 2 i 4 creuen que poden rascar mes punts de la partida, contren!"
       if esRecontra1 trumfu ma3 then do --evalua si la teva parella recontraria
         putStrLn "#La teva parella s'ha rascat la orella esquerra molt sutilment... estara volguent dir alguna cosa..."
       else do
-        putStrLn " "
+        putStrLn "#La teva parella no fa gaire bona cara... sembla que no te bones cartes..."
       putStrLn "Jugador 1, vols recontrar?"
       putStrLn "(S/N)"
       eleccio <- getLine
-      if eleccio == "S" || eleccio == "s" then do
-        putStrLn "La parella formada per el jugador 1 i 3 ho tenen molt clar i recontren!"
-        putStrLn "WIP1"
-      else if eleccio == "N" || eleccio == "n" then do
+      if eleccio == "S" || eleccio == "s" then do --recontrem!
+        putStrLn "La parella formada per el jugador 1 i 3 ho tenen molt clar i recontren!!"
+        if santVicencs2 trumfu ma2 ma4 then do -- la maquina fa sant vicens
+          putStrLn "La parella formada per el jugador 2 i 4 van molt forts i canten Sant Vicens!!!"
+          if esBarraca1 trumfu ma3 then do --evaluem si la parella cantaria barraca
+            putStrLn "Parella va per barraca"
+          else do
+            putStrLn "Parella no va per barraca"
+          putStrLn "Jugador 1, vols cantar Barraca?"
+          putStrLn "(S/N)"
+          eleccio <- getLine
+          if eleccio == "S" || eleccio == "s" then do --cantem barraca
+            putStrLn "Sha cantat Barraca"
+            putStrLn "Començem partida"
+            mainLoop trumfu ma1 ma2 ma3 ma4 escollidor 4
+          else if eleccio == "N" || eleccio == "n" then do --no cantem barraca
+            putStrLn "No Sha cantat Barraca"
+            putStrLn "Començem partida"
+            mainLoop trumfu ma1 ma2 ma3 ma4 escollidor 4
+          else do --error
+            putStrLn "No es una opcio valida, torna a respondre:"
+            contrarTime trumfu ma1 ma2 ma3 ma4 escollidor
+        else do
+          putStrLn "La maquina no fa sant vicent, juguem"
+          mainLoop trumfu ma1 ma2 ma3 ma4 escollidor 2
+      else if eleccio == "N" || eleccio == "n" then do --no recontrem
         putStrLn "La parella formada per el jugador 1 i 3  no ho han vist clar i han deixat passar la oportunitat de recontrar..."
         putStrLn "Procedim doncs a comensar la partida sense multiplicadors de puntuacio."
         mainLoop trumfu ma1 ma2 ma3 ma4 escollidor 2
-      else do
+      else do --error
         putStrLn "No es una opcio valida, torna a respondre:"
         contrarTime trumfu ma1 ma2 ma3 ma4 escollidor
     else do --la maquina no recontra
@@ -240,6 +263,10 @@ esRecontra1 :: Trumfu -> Ma -> Bool --ToDo: Aqui necessitem la teva maestria pol
 esRecontra1 trumfu maX = True
 esContra2 :: Trumfu -> Ma -> Ma -> Bool --ToDo: Aqui necessitem la teva maestria polete!
 esContra2 trumfu maX maY = True
+santVicencs2 :: Trumfu -> Ma -> Ma -> Bool --ToDo: Aqui necessitem la teva maestria polete!
+santVicencs2 trumfu maX maY = True
+esBarraca1 :: Trumfu -> Ma -> Bool --ToDo: Aqui necessitem la teva maestria polete!
+esBarraca1 trumfu maX = True
 --
 
 
