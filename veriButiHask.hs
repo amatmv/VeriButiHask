@@ -379,7 +379,17 @@ esRecontra2 trumfu maX maY = if (length (cartesPalMa maX (trumfu2Pal trumfu)) >=
 esBarraca2 :: Trumfu -> Ma -> Ma -> Bool
 esBarraca2 trumfu maX maY = if length (cartesPalMa maX (trumfu2Pal trumfu)) >=7 || length (cartesPalMa maY (trumfu2Pal trumfu)) >=7 then True else False
 iaEscullTrumfu :: Ma -> Trumfu
-iaEscullTrumfu _ = Or
+iaEscullTrumfu llista
+  | (nOros == nBastos) && (nOros == nCopes) && (nEspases == nOros) = Bu
+  | (nOros >= nBastos) && (nOros >= nEspases) && (nOros >= nCopes) = Or 
+  | (nBastos >= nOros) && (nBastos >= nEspases) && (nBastos >= nCopes) = Ba
+  | (nEspases >= nBastos) && (nEspases >= nOros) && (nEspases >= nCopes) = Es
+  | (nCopes >= nBastos) && (nCopes >= nEspases) && (nCopes >= nOros) = Co
+  where 
+    nOros = length (cartesPalMa llista Oros)
+    nBastos = length (cartesPalMa llista Bastos)
+    nEspases = length (cartesPalMa llista Copes)
+    nCopes = length (cartesPalMa llista Espases)
 --
 
 
