@@ -139,9 +139,12 @@ jugar = do
   putStrLn "---------------------------------------------------------"
   putStrLn "---------------------------------------------------------"
   putStrLn " "
+  putStrLn "Entra una llavor per a generar la baralla: "
+  llavor <- getLine
+  putStrLn "S'ha generat la baralla. "
   putStrLn "Procedint a inicialitzar la partida..."
   putStrLn "Repartint les cartes..."
-  let mans = crearMans(repartirCartes (shuffle baralla))
+  let mans = crearMans(repartirCartes (shuffle baralla (read llavor::Int)))
   let ma1 = (mans !! 0)
   let ma2 = (mans !! 1)
   let ma3 = (mans !! 2)
@@ -399,12 +402,17 @@ repartirCartes' :: [[Carta]] -> [Carta] -> [[Carta]]
 repartirCartes' llista [] = llista
 repartirCartes' llista (w:x:y:z:xs) = repartirCartes' [((llista !! 0) ++ [w]), ((llista !! 1) ++ [x]), ((llista !! 2) ++ [y]), ((llista !! 3) ++ [z])] xs
 
-shuffle :: [Carta] -> [Carta]
-shuffle (carta:[]) = [carta]
-shuffle (carta:cs) = (cartes !! rand) : shuffle deleteRandomCard
+
+{- shuffle
+  Input: Una llista de cartes
+  Output: La llista entrada barrejada
+-}
+shuffle :: [Carta] -> Int -> [Carta]
+shuffle (carta:[]) llavor = [carta]
+shuffle (carta:cs) llavor = (cartes !! rand) : shuffle deleteRandomCard llavor
     where
         cartes = (carta:cs)
-        rand = unsafePerformIO (getStdRandom (randomR (0, (length cartes)-1)))
+        rand = mod (unsafePerformIO (getStdRandom (randomR (0, (length cartes)-1))) * llavor) (length cartes)
         deleteRandomCard = (fst $ splitAt rand cartes) ++ (tail $ snd $ splitAt rand cartes)
 
 {- getCardValue
@@ -430,7 +438,7 @@ getCardValue tipus = case tipus of
   Input: El TipusCarta
   Output: El valor numèric corresponent a la puntuació d'aquest TipusCarta
 -}
-getCardPunctuation :: TipusCarta ->  Integer
+getCardPunctuation :: TipusCarta ->  Int
 getCardPunctuation tipus = case tipus of
       Sota -> 1
       Cavall -> 2
@@ -443,7 +451,7 @@ getCardPunctuation tipus = case tipus of
   Input: Conjunt de cartes
   Output: Puntuació del conjunt de cartes
 -}
-punts :: [Carta] -> Integer
+punts :: [Carta] -> Int
 punts [] = 0
 punts ((NewC (pal, tipus)):cv) = (getCardPunctuation tipus) + (punts cv)
 
@@ -498,7 +506,7 @@ cartesPalBasa (NewB (j,w,x,y,z)) pal = [x | x<-[w,x,y,z], (pal == (getPal x))]
 cartesPalMa :: Ma -> Pal -> [Carta]
 cartesPalMa (NewM llista) pal= [x | x<-llista, (pal == (getPal x))]
 
-{- puntsParelles
+{- cartesPal
   Input: Un conjunt de Cartes i un Pal
   Output: Conjunt de Cartes que són del Pal especificat
 -}
