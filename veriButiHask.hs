@@ -472,11 +472,10 @@ cartesGuanyades trumfu (carta:xs) tirador
     _baseActual = (NewB (tirador, carta, xs !! 0, xs !! 1, xs !! 2))
     _cartes_guanyades = cartesBasa (NewB (_guanyador, carta, xs !! 0, xs !! 1, xs !! 2))
 
-nombreCorrecteDeCartes :: [Carta] -> Bool
-nombreCorrecteDeCartes (carta:xs) = (mod (length (carta:xs)) 4) == 0
-
-nombreJugadorsCorrecte :: Integer -> Bool
-nombreJugadorsCorrecte jugadors = jugadors >= 1 && jugadors <= 4
+puntsParelles :: [[Carta]] -> Trumfu -> [Carta] -> Int -> Maybe (Int, Int)
+puntsParelles mans t cartes jugador = Just (punts $ fst _cartes_guanyades, punts $ snd _cartes_guanyades)
+  where
+    _cartes_guanyades = cartesGuanyades t cartes jugador
 
 {- getPal
   Input: Una Carta.
