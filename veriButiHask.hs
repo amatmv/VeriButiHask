@@ -356,18 +356,22 @@ mainLoop trumfu ma1 ma2 ma3 ma4 oldEscollidor multiplicador = do
 --------------------------
 --- Funcions Auxiliars ---
 --------------------------
-
+teManillaOAsDeTrunfus :: Trumfu -> Ma -> Bool
+teManillaOAsDeTrunfus t (NewM l)
+  | ([x | x<-l, ((trumfu2Pal t == (getPal x)) && ((getTipus x == As) || (getTipus x == As)))] == []) = False
+  | otherwise = True
+  
 -- Aixo ha de dir si la IA hi aniria a l'hora de Contro Recontro SantVicens i Barraca polete
-esRecontra1 :: Trumfu -> Ma -> Bool --ToDo: Aqui necessitem la teva maestria polete!
-esRecontra1 trumfu maX = True
-esContra2 :: Trumfu -> Ma -> Ma -> Bool --ToDo: Aqui necessitem la teva maestria polete!
-esContra2 trumfu maX maY = True
-santVicens2 :: Trumfu -> Ma -> Ma -> Bool --ToDo: Aqui necessitem la teva maestria polete!
-santVicens2 trumfu maX maY = True
+esRecontra1 :: Trumfu -> Ma -> Bool
+esRecontra1 trumfu maX = if (length (cartesPalMa maX (trumfu2Pal trumfu)) >=6) || ((length (cartesPalMa maX (trumfu2Pal trumfu)) >=4) && (teManillaOAsDeTrunfus trumfu maX)) then True else False
+esContra2 :: Trumfu -> Ma -> Ma -> Bool
+esContra2 trumfu maX maY = if (length (cartesPalMa maX (trumfu2Pal trumfu)) >=4) || (length (cartesPalMa maY (trumfu2Pal trumfu)) >=4) ||  ((length (cartesPalMa maX (trumfu2Pal trumfu)) >=3) && (teManillaOAsDeTrunfus trumfu maX)) || ((length (cartesPalMa maY (trumfu2Pal trumfu)) >=3) && (teManillaOAsDeTrunfus trumfu maY)) then True else False
+santVicens2 :: Trumfu -> Ma -> Ma -> Bool
+santVicens2 trumfu maX maY = if ((length (cartesPalMa maX (trumfu2Pal trumfu)) >=7) || (length (cartesPalMa maY (trumfu2Pal trumfu)) >=7)) then True else False
 santVicens1 :: Trumfu -> Ma -> Bool --ToDo: Aqui necessitem la teva maestria polete!
 santVicens1 trumfu maX = True
-esBarraca1 :: Trumfu -> Ma -> Bool --ToDo: Aqui necessitem la teva maestria polete!
-esBarraca1 trumfu maX = True
+esBarraca1 :: Trumfu -> Ma -> Bool
+esBarraca1 trumfu maX = if length (cartesPalMa maX (trumfu2Pal trumfu)) >=7 then True else False
 esContra1 :: Trumfu -> Ma -> Bool --ToDo: Aqui necessitem la teva maestria polete!
 esContra1 trumfu maX = True
 esRecontra2 :: Trumfu -> Ma -> Ma -> Bool --ToDo: Aqui necessitem la teva maestria polete!
