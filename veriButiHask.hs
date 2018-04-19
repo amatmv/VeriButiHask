@@ -27,7 +27,14 @@ data Pal = Oros | Bastos | Copes | Espases
   És mostrable i comparable.
 -}
 data Trumfu = Or | Ba | Co | Es | Bu
-              deriving (Show, Eq)
+              deriving (Eq)
+
+instance Show Trumfu where
+  show Or = show "Oros"
+  show Ba = show "Bastos"
+  show Co = show "Copes"
+  show Es = show "Espases"
+  show Bu = show "Butifarra"
 
 {-------- MULTIPLICADOR: Multiplicadors de la partida ------
   El Multiplicador es el valor per el qual es multiplica la puntuació.
@@ -138,20 +145,11 @@ jugar = do
   putStrLn " "
   putStrLn "Procedint a inicialitzar la partida..."
   putStrLn "Repartint les cartes..."
-  -- print(crearMans(repartirCartes (fst (shuffle' baralla (mkStdGen (read llavor::Int))))))
   let mans = crearMans(repartirCartes (fst (shuffle' baralla (mkStdGen (read llavor::Int)))))
   let ma1 = (mans !! 0)
   let ma2 = (mans !! 1)
   let ma3 = (mans !! 2)
   let ma4 = (mans !! 3)
-  -- putStrLn "Ma 1: "
-  -- print(ma1)
-  -- putStrLn "Ma 2: "
-  -- print(ma2)
-  -- putStrLn "Ma 3: "
-  -- print(ma3)
-  -- putStrLn "Ma 4: "
-  -- print(ma4)
   putStrLn "Cartes repartides als jugadors!"
   putStrLn " "
   putStrLn "La teva ma és la següent: "
@@ -161,11 +159,11 @@ jugar = do
   putStrLn "El primer jugador a tirar ets tu!"
   putStrLn " "
   putStrLn "Escull un dels seguents Trumfus:"
-  escollirTrumfu ma1 ma2 ma3 ma4 1
+  escollirTrumfu ma1 ma2 ma3 ma4 0
 
 escollirTrumfu ma1 ma2 ma3 ma4 escollidor = do
   putStrLn "->> Oros, Bastos, Copes, Espases, Butifarra <<-"
-  if escollidor == 1 then do --si escollim nosaltres
+  if escollidor == 0 then do --escullo jo
     trumfu <- getLine
     putStrLn " "
     if trumfu == "Oros" then do
@@ -181,19 +179,29 @@ escollirTrumfu ma1 ma2 ma3 ma4 escollidor = do
       putStrLn "En aquesta partida el Trumfu escollit es Espases!"
       contrarTime Es ma1 ma2 ma3 ma4 escollidor
     else if trumfu == "Butifarra" then do
-      putStrLn "En aquesta partida el Trumfu escollit es Butifarra!!!"
+      putStrLn "En aquesta partida el Trumfu escollit es Butifarra!"
       contrarTime Bu ma1 ma2 ma3 ma4 escollidor
     else do
       putStrLn "No es una opcio correcte, torna a escollir un  dels seguents Trumfus:"
       escollirTrumfu ma1 ma2 ma3 ma4 escollidor
-  else do -- la maquina tria
-    putStrLn "WIP"
-    putStrLn "En aquesta partida el Trumfu escollit es Oros!"
+  else if escollidor == 1 then do -- la maquina 2 tria
+    let trumfu = iaEscullTrumfu ma2
     putStrLn " "
-    contrarTime Or ma1 ma2 ma3 ma4 escollidor
+    putStrLn ("En aquesta partida el Trumfu escollit es" ++ show(trumfu) ++"!")
+    contrarTime trumfu ma1 ma2 ma3 ma4 escollidor
+  else if escollidor == 2 then do -- la maquina 3 tria
+    let trumfu = iaEscullTrumfu ma3
+    putStrLn " "
+    putStrLn ("En aquesta partida el Trumfu escollit es" ++ show(trumfu) ++"!")
+    contrarTime trumfu ma1 ma2 ma3 ma4 escollidor
+  else do -- la maquina 4 tria
+    let trumfu = iaEscullTrumfu ma4
+    putStrLn " "
+    putStrLn ("En aquesta partida el Trumfu escollit es" ++ show(trumfu) ++"!")
+    contrarTime trumfu ma1 ma2 ma3 ma4 escollidor
 
 contrarTime trumfu ma1 ma2 ma3 ma4 escollidor = do
-  if (escollidor == 1) || (escollidor == 3) then do -- La maquina ha de contrar
+  if (escollidor == 0) || (escollidor == 2) then do -- La maquina ha de contrar
     if esContra2 trumfu ma2 ma4 then do -- La maquina contra
       putStrLn "La parella formada per el jugador 2 i 4 creuen que poden rascar mes punts de la partida, contren!"
       putStrLn "Jugadors 1 i 3, penseu fer alguna cosa al respecte? Recontreu?"
@@ -266,9 +274,9 @@ contrarTime trumfu ma1 ma2 ma3 ma4 escollidor = do
       if esRecontra2 trumfu ma2 ma4 then do --la maquina ens recontra!
         putStrLn "La parella formada per el jugador 2 i 4 ho tenen molt clar i recontren!!"
         if (trumfu /= Bu) then do --Si el trumfu es Butifarra ja  no es pot multiplicar mes
-          putStrLn "Jugadors 1 i 3, voleu contrar?"
+          putStrLn "Jugadors 1 i 3, penseu fer alguna cosa al respecte? M'ha semblat escoltar Sant Vicenç?"
           putStrLn "(S/N)"
-          let parellaVa = esContra1 trumfu ma3
+          let parellaVa = santVicens1 trumfu ma3
           let joVaig = (unsafePerformIO hiVas)
           if parellaVa || joVaig then do -- cantem sant vicens
             if parellaVa && joVaig then do
@@ -328,7 +336,8 @@ mainLoop trumfu ma1 ma2 ma3 ma4 oldEscollidor multiplicador = do
   ent <- getLine
   if ent == "GG" then do
     putStrLn "GG WP"
-    mainLoop trumfu ma1 ma2 ma3 ma4 oldEscollidor multiplicador
+    putStrLn ("New Escollidor: " ++ show(newEscollidor+1))
+    mainLoop trumfu ma1 ma2 ma3 ma4 newEscollidor multiplicador
   else do
     putStrLn "Surrender"
 
@@ -354,6 +363,8 @@ esRecontra2 :: Trumfu -> Ma -> Ma -> Bool --ToDo: Aqui necessitem la teva maestr
 esRecontra2 trumfu maX maY = True
 esBarraca2 :: Trumfu -> Ma -> Ma -> Bool --ToDo: Aqui necessitem la teva maestria polete!
 esBarraca2 trumfu maX maY = True
+iaEscullTrumfu :: Ma -> Trumfu
+iaEscullTrumfu _ = Or
 --
 
 
