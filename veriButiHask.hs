@@ -139,13 +139,9 @@ jugar = do
   putStrLn "---------------------------------------------------------"
   putStrLn "---------------------------------------------------------"
   putStrLn " "
-  putStrLn "Entra una llavor per a generar la baralla: "
-  llavor <- getLine
-  putStrLn "S'ha generat la baralla. "
-  putStrLn " "
   putStrLn "Procedint a inicialitzar la partida..."
   putStrLn "Repartint les cartes..."
-  let mans = crearMans(repartirCartes (fst (shuffle' baralla (mkStdGen (read llavor::Int)))))
+  let mans = crearMans(repartirCartes (shuffle baralla))
   let ma1 = (mans !! 0)
   let ma2 = (mans !! 1)
   let ma3 = (mans !! 2)
@@ -427,26 +423,40 @@ escollirCarta cartes = do
 --------------------------
 --- Funcions Auxiliars ---
 --------------------------
+teManillaOAsDeTrunfus :: Trumfu -> Ma -> Bool
+teManillaOAsDeTrunfus t (NewM l)
+  | ([x | x<-l, ((trumfu2Pal t == (getPal x)) && ((getTipus x == As) || (getTipus x == As)))] == []) = False
+  | otherwise = True
 
 -- Aixo ha de dir si la IA hi aniria a l'hora de Contro Recontro SantVicens i Barraca polete
-esRecontra1 :: Trumfu -> Ma -> Bool --ToDo: Aqui necessitem la teva maestria polete!
-esRecontra1 trumfu maX = True
-esContra2 :: Trumfu -> Ma -> Ma -> Bool --ToDo: Aqui necessitem la teva maestria polete!
-esContra2 trumfu maX maY = True
-santVicens2 :: Trumfu -> Ma -> Ma -> Bool --ToDo: Aqui necessitem la teva maestria polete!
-santVicens2 trumfu maX maY = True
-santVicens1 :: Trumfu -> Ma -> Bool --ToDo: Aqui necessitem la teva maestria polete!
-santVicens1 trumfu maX = True
-esBarraca1 :: Trumfu -> Ma -> Bool --ToDo: Aqui necessitem la teva maestria polete!
-esBarraca1 trumfu maX = True
-esContra1 :: Trumfu -> Ma -> Bool --ToDo: Aqui necessitem la teva maestria polete!
-esContra1 trumfu maX = True
-esRecontra2 :: Trumfu -> Ma -> Ma -> Bool --ToDo: Aqui necessitem la teva maestria polete!
-esRecontra2 trumfu maX maY = True
-esBarraca2 :: Trumfu -> Ma -> Ma -> Bool --ToDo: Aqui necessitem la teva maestria polete!
-esBarraca2 trumfu maX maY = True
+esRecontra1 :: Trumfu -> Ma -> Bool
+esRecontra1 trumfu maX = if (length (cartesPalMa maX (trumfu2Pal trumfu)) >=6) || ((length (cartesPalMa maX (trumfu2Pal trumfu)) >=4) && (teManillaOAsDeTrunfus trumfu maX)) then True else False
+esContra2 :: Trumfu -> Ma -> Ma -> Bool
+esContra2 trumfu maX maY = if (length (cartesPalMa maX (trumfu2Pal trumfu)) >=4) || (length (cartesPalMa maY (trumfu2Pal trumfu)) >=4) ||  ((length (cartesPalMa maX (trumfu2Pal trumfu)) >=3) && (teManillaOAsDeTrunfus trumfu maX)) || ((length (cartesPalMa maY (trumfu2Pal trumfu)) >=3) && (teManillaOAsDeTrunfus trumfu maY)) then True else False
+santVicens2 :: Trumfu -> Ma -> Ma -> Bool
+santVicens2 trumfu maX maY = if ((length (cartesPalMa maX (trumfu2Pal trumfu)) >=7) || (length (cartesPalMa maY (trumfu2Pal trumfu)) >=7)) then True else False
+santVicens1 :: Trumfu -> Ma -> Bool 
+santVicens1 trumfu maX = if (length (cartesPalMa maX (trumfu2Pal trumfu)) >=7) then True else False
+esBarraca1 :: Trumfu -> Ma -> Bool
+esBarraca1 trumfu maX = if length (cartesPalMa maX (trumfu2Pal trumfu)) >=7 then True else False
+esContra1 :: Trumfu -> Ma -> Bool
+esContra1 trumfu maX = if (length (cartesPalMa maX (trumfu2Pal trumfu)) >=4) || (length (cartesPalMa maX (trumfu2Pal trumfu)) >=3) then True else False
+esRecontra2 :: Trumfu -> Ma -> Ma -> Bool
+esRecontra2 trumfu maX maY = if (length (cartesPalMa maX (trumfu2Pal trumfu)) >=6) || ((length (cartesPalMa maX (trumfu2Pal trumfu)) >=4) && (teManillaOAsDeTrunfus trumfu maX)) || if (length (cartesPalMa maX (trumfu2Pal trumfu)) >=6) || ((length (cartesPalMa maY (trumfu2Pal trumfu)) >=4) && (teManillaOAsDeTrunfus trumfu maY)) then True else False then True else False
+esBarraca2 :: Trumfu -> Ma -> Ma -> Bool
+esBarraca2 trumfu maX maY = if length (cartesPalMa maX (trumfu2Pal trumfu)) >=7 || length (cartesPalMa maY (trumfu2Pal trumfu)) >=7 then True else False
 iaEscullTrumfu :: Ma -> Trumfu
-iaEscullTrumfu _ = Or
+iaEscullTrumfu llista
+  | (nOros == nBastos) && (nOros == nCopes) && (nEspases == nOros) = Bu
+  | (nOros >= nBastos) && (nOros >= nEspases) && (nOros >= nCopes) = Or
+  | (nBastos >= nOros) && (nBastos >= nEspases) && (nBastos >= nCopes) = Ba
+  | (nEspases >= nBastos) && (nEspases >= nOros) && (nEspases >= nCopes) = Es
+  | (nCopes >= nBastos) && (nCopes >= nEspases) && (nCopes >= nOros) = Co
+  where
+    nOros = length (cartesPalMa llista Oros)
+    nBastos = length (cartesPalMa llista Bastos)
+    nEspases = length (cartesPalMa llista Copes)
+    nCopes = length (cartesPalMa llista Espases)
 --
 
 escollirCartaIA :: Ma -> [Carta] -> Trumfu -> Carta
@@ -465,39 +475,13 @@ repartirCartes' :: [[Carta]] -> [Carta] -> [[Carta]]
 repartirCartes' llista [] = llista
 repartirCartes' llista (w:x:y:z:xs) = repartirCartes' [((llista !! 0) ++ [w]), ((llista !! 1) ++ [x]), ((llista !! 2) ++ [y]), ((llista !! 3) ++ [z])] xs
 
-shuffle :: [Carta] -> Int -> [Carta]
-shuffle (carta:[]) llavor = [carta]
-shuffle (carta:cs) llavor = (cartes !! rand) : shuffle (delete rand cartes) llavor
+shuffle :: [Carta] -> [Carta]
+shuffle (carta:[]) = [carta]
+shuffle (carta:cs) = (cartes !! rand) : shuffle deleteRandomCard
     where
-      cartes = (carta:cs)
-      rand = mod unsafeIORandom llavor
-      unsafeIORandom = (unsafePerformIO (getStdRandom (randomR (0, (length cartes)-1))))
-      delete :: Int -> [Carta] -> [Carta]
-      delete n c = (fst $ splitAt n c) ++ (tail $ snd $ splitAt n c)
-
-
--- | Randomly shuffle a list without the IO Monad
---   /O(N)/
-shuffle' :: [a] -> StdGen -> ([a],StdGen)
-shuffle' xs gen = runST (do
-        g <- newSTRef gen
-        let randomRST lohi = do
-              (a,s') <- liftM (randomR lohi) (readSTRef g)
-              writeSTRef g s'
-              return a
-        ar <- newArray n xs
-        xs' <- forM [1..n] $ \i -> do
-                j <- randomRST (i,n)
-                vi <- readArray ar i
-                vj <- readArray ar j
-                writeArray ar j vi
-                return vj
-        gen' <- readSTRef g
-        return (xs',gen'))
-  where
-    n = length xs
-    newArray :: Int -> [a] -> ST s (STArray s Int a)
-    newArray n xs =  newListArray (1,n) xs
+        cartes = (carta:cs)
+        rand = unsafePerformIO (getStdRandom (randomR (0, (length cartes)-1)))
+        deleteRandomCard = (fst $ splitAt rand cartes) ++ (tail $ snd $ splitAt rand cartes)
 
 {- getCardValue
   Input: Un TipusCarta
@@ -546,13 +530,12 @@ punts ((NewC (pal, tipus)):cv) = (getCardPunctuation tipus) + (punts cv)
 cartesGuanyades :: Trumfu -> [Carta] -> Integer -> ([Carta],[Carta])
 cartesGuanyades trumfu [] _ = ([],[])
 cartesGuanyades trumfu (carta:xs) tirador
-  | not (nombreJugadorsCorrecte tirador) = error "Només hi ha 4 jugadors (1-4)"
-  | not (nombreCorrecteDeCartes (carta:xs)) = error "El nombre de cartes tirades ha de ser múltiples de 4"
-  | (length (carta:xs)) == 4  = if mod _guanyador 2 /= 0 then (fst _cas_base ++ _cartes_guanyades, snd _cas_base) else (fst _cas_base, snd _cas_base ++ _cartes_guanyades)
-  | mod (length (carta:xs)) 4 == 0 = cartesGuanyades trumfu (drop 4 (carta:xs)) _guanyador
+  | (length (carta:xs)) == 4  = if mod _guanyador 2 == 0 then (fst _cas_base ++ _cartes_guanyades, snd _cas_base) else (fst _cas_base, snd _cas_base ++ _cartes_guanyades)
+  | mod (length (carta:xs)) 4 == 0 = if mod _guanyador 2 == 0 then (fst _crida_recursiva ++ _cartes_guanyades, snd _crida_recursiva) else (fst _crida_recursiva, snd _crida_recursiva ++ _cartes_guanyades)
   | otherwise = error "Error desconegut"
   where
     _cas_base = (cartesGuanyades trumfu [] 0)
+    _crida_recursiva = cartesGuanyades trumfu (drop 4 (carta:xs)) _guanyador
     _guanyador = jugadorGuanyaBasa _baseActual trumfu
     _baseActual = (NewB (tirador, carta, xs !! 0, xs !! 1, xs !! 2))
     _cartes_guanyades = cartesBasa (NewB (_guanyador, carta, xs !! 0, xs !! 1, xs !! 2))
