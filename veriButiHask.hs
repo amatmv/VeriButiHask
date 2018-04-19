@@ -401,36 +401,11 @@ repartirCartes' llista (w:x:y:z:xs) = repartirCartes' [((llista !! 0) ++ [w]), (
 
 shuffle :: [Carta] -> [Carta]
 shuffle (carta:[]) = [carta]
-shuffle (carta:cs) = (cartes !! rand) : shuffle (delete rand cartes)
+shuffle (carta:cs) = (cartes !! rand) : shuffle deleteRandomCard
     where
         cartes = (carta:cs)
         rand = unsafePerformIO (getStdRandom (randomR (0, (length cartes)-1)))
-        delete :: Int -> [Carta] -> [Carta]
-        delete n c = (fst $ splitAt n c) ++ (tail $ snd $ splitAt n c)
-
-
--- | Randomly shuffle a list without the IO Monad
---   /O(N)/
-shuffle' :: [a] -> StdGen -> ([a],StdGen)
-shuffle' xs gen = runST (do
-        g <- newSTRef gen
-        let randomRST lohi = do
-              (a,s') <- liftM (randomR lohi) (readSTRef g)
-              writeSTRef g s'
-              return a
-        ar <- newArray n xs
-        xs' <- forM [1..n] $ \i -> do
-                j <- randomRST (i,n)
-                vi <- readArray ar i
-                vj <- readArray ar j
-                writeArray ar j vi
-                return vj
-        gen' <- readSTRef g
-        return (xs',gen'))
-  where
-    n = length xs
-    newArray :: Int -> [a] -> ST s (STArray s Int a)
-    newArray n xs =  newListArray (1,n) xs
+        deleteRandomCard = (fst $ splitAt rand cartes) ++ (tail $ snd $ splitAt rand cartes)
 
 {- getCardValue
   Input: Un TipusCarta
