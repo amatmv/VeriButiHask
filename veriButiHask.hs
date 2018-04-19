@@ -454,13 +454,12 @@ punts ((NewC (pal, tipus)):cv) = (getCardPunctuation tipus) + (punts cv)
 cartesGuanyades :: Trumfu -> [Carta] -> Integer -> ([Carta],[Carta])
 cartesGuanyades trumfu [] _ = ([],[])
 cartesGuanyades trumfu (carta:xs) tirador
-  | not (nombreJugadorsCorrecte tirador) = error "Només hi ha 4 jugadors (1-4)"
-  | not (nombreCorrecteDeCartes (carta:xs)) = error "El nombre de cartes tirades ha de ser múltiples de 4"
-  | (length (carta:xs)) == 4  = if mod _guanyador 2 /= 0 then (fst _cas_base ++ _cartes_guanyades, snd _cas_base) else (fst _cas_base, snd _cas_base ++ _cartes_guanyades)
-  | mod (length (carta:xs)) 4 == 0 = cartesGuanyades trumfu (drop 4 (carta:xs)) _guanyador
+  | (length (carta:xs)) == 4  = if mod _guanyador 2 == 0 then (fst _cas_base ++ _cartes_guanyades, snd _cas_base) else (fst _cas_base, snd _cas_base ++ _cartes_guanyades)
+  | mod (length (carta:xs)) 4 == 0 = if mod _guanyador 2 == 0 then (fst _crida_recursiva ++ _cartes_guanyades, snd _crida_recursiva) else (fst _crida_recursiva, snd _crida_recursiva ++ _cartes_guanyades)
   | otherwise = error "Error desconegut"
   where
     _cas_base = (cartesGuanyades trumfu [] 0)
+    _crida_recursiva = cartesGuanyades trumfu (drop 4 (carta:xs)) _guanyador
     _guanyador = jugadorGuanyaBasa _baseActual trumfu
     _baseActual = (NewB (tirador, carta, xs !! 0, xs !! 1, xs !! 2))
     _cartes_guanyades = cartesBasa (NewB (_guanyador, carta, xs !! 0, xs !! 1, xs !! 2))
