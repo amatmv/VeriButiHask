@@ -368,16 +368,16 @@ esContra2 :: Trumfu -> Ma -> Ma -> Bool
 esContra2 trumfu maX maY = if (length (cartesPalMa maX (trumfu2Pal trumfu)) >=4) || (length (cartesPalMa maY (trumfu2Pal trumfu)) >=4) ||  ((length (cartesPalMa maX (trumfu2Pal trumfu)) >=3) && (teManillaOAsDeTrunfus trumfu maX)) || ((length (cartesPalMa maY (trumfu2Pal trumfu)) >=3) && (teManillaOAsDeTrunfus trumfu maY)) then True else False
 santVicens2 :: Trumfu -> Ma -> Ma -> Bool
 santVicens2 trumfu maX maY = if ((length (cartesPalMa maX (trumfu2Pal trumfu)) >=7) || (length (cartesPalMa maY (trumfu2Pal trumfu)) >=7)) then True else False
-santVicens1 :: Trumfu -> Ma -> Bool --ToDo: Aqui necessitem la teva maestria polete!
-santVicens1 trumfu maX = True
+santVicens1 :: Trumfu -> Ma -> Bool 
+santVicens1 trumfu maX = if (length (cartesPalMa maX (trumfu2Pal trumfu)) >=7) then True else False
 esBarraca1 :: Trumfu -> Ma -> Bool
 esBarraca1 trumfu maX = if length (cartesPalMa maX (trumfu2Pal trumfu)) >=7 then True else False
-esContra1 :: Trumfu -> Ma -> Bool --ToDo: Aqui necessitem la teva maestria polete!
-esContra1 trumfu maX = True
-esRecontra2 :: Trumfu -> Ma -> Ma -> Bool --ToDo: Aqui necessitem la teva maestria polete!
-esRecontra2 trumfu maX maY = True
-esBarraca2 :: Trumfu -> Ma -> Ma -> Bool --ToDo: Aqui necessitem la teva maestria polete!
-esBarraca2 trumfu maX maY = True
+esContra1 :: Trumfu -> Ma -> Bool
+esContra1 trumfu maX = if (length (cartesPalMa maX (trumfu2Pal trumfu)) >=4) || (length (cartesPalMa maX (trumfu2Pal trumfu)) >=3) then True else False
+esRecontra2 :: Trumfu -> Ma -> Ma -> Bool
+esRecontra2 trumfu maX maY = if (length (cartesPalMa maX (trumfu2Pal trumfu)) >=6) || ((length (cartesPalMa maX (trumfu2Pal trumfu)) >=4) && (teManillaOAsDeTrunfus trumfu maX)) || if (length (cartesPalMa maX (trumfu2Pal trumfu)) >=6) || ((length (cartesPalMa maY (trumfu2Pal trumfu)) >=4) && (teManillaOAsDeTrunfus trumfu maY)) then True else False then True else False
+esBarraca2 :: Trumfu -> Ma -> Ma -> Bool
+esBarraca2 trumfu maX maY = if length (cartesPalMa maX (trumfu2Pal trumfu)) >=7 || length (cartesPalMa maY (trumfu2Pal trumfu)) >=7 then True else False
 iaEscullTrumfu :: Ma -> Trumfu
 iaEscullTrumfu _ = Or
 --
