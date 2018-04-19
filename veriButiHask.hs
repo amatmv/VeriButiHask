@@ -96,7 +96,7 @@ show2 (NewM (x:xs)) = ((show x) ++ "-" ++ (show2 (NewM xs)))
   La Basa sempre conté quatre cartes i és iniciada per un jugador.
   És comparable.
 -}
-data Basa = NewB (Integer, Carta, Carta, Carta, Carta) deriving Eq
+data Basa = NewB (Int, Carta, Carta, Carta, Carta) deriving Eq
 
 instance Show Basa where --Fer Basa mostrable.
   show (NewB (j,w,x,y,z))= ("Tirada iniciada per el jugador: " ++ (show j) ++ "\n" ++ "  Tirada 1: " ++ (show w) ++ "\n" ++ "  Tirada 2: " ++ (show x) ++ "\n" ++ "  Tirada 3: " ++ (show y) ++ "\n" ++ "  Tirada 4: " ++ (show z))
@@ -419,7 +419,7 @@ shuffle (carta:cs) llavor = (cartes !! rand) : shuffle deleteRandomCard llavor
   Input: Un TipusCarta
   Output: Valor numèric corresponent al tipus de la carta
 -}
-getCardValue :: TipusCarta ->  Integer
+getCardValue :: TipusCarta ->  Int
 getCardValue tipus = case tipus of
       Manilla -> 12
       As -> 11
@@ -459,7 +459,7 @@ punts ((NewC (pal, tipus)):cv) = (getCardPunctuation tipus) + (punts cv)
   Input: Donat un trumfu, un conjunt de cartes i el numero de tirador inicial.
   Output: Retorna una tupla que conté les cartes que ha guanyat cada grup
 -}
-cartesGuanyades :: Trumfu -> [Carta] -> Integer -> ([Carta],[Carta])
+cartesGuanyades :: Trumfu -> [Carta] -> Int -> ([Carta],[Carta])
 cartesGuanyades trumfu [] _ = ([],[])
 cartesGuanyades trumfu (carta:xs) tirador
   | (length (carta:xs)) == 4  = if mod _guanyador 2 == 0 then (fst _cas_base ++ _cartes_guanyades, snd _cas_base) else (fst _cas_base, snd _cas_base ++ _cartes_guanyades)
@@ -545,7 +545,7 @@ basa4 (NewB (_,_,_,_,z)) = z
   Input: Una basa
   Output: Retorna el jugador que tira la primera carta de la basa
 -}
-iniciadorBasa :: Basa -> Integer
+iniciadorBasa :: Basa -> Int
 iniciadorBasa (NewB (j,_,_,_,_)) = j
 
 {- cartesBasa
@@ -580,7 +580,7 @@ pal2Trumfu pal = case pal of
   Copes -> Co
   Espases -> Es
 
-jugadorGuanyaBasa :: Basa -> Trumfu -> Integer
+jugadorGuanyaBasa :: Basa -> Trumfu -> Int
 jugadorGuanyaBasa b t = tiradorCarta (cartaGuanyadora (basa1 b) (cartesBasa b) (palGuanyadorBasa b t)) b
 
 cartaGuanyadora :: Carta -> [Carta] -> Pal -> Carta
@@ -594,7 +594,7 @@ mata c1 c2 p
   | c1 >= c2 = c1
   | c2 > c1 = c2
 
-tiradorCarta :: Carta -> Basa -> Integer
+tiradorCarta :: Carta -> Basa -> Int
 tiradorCarta c b
   | (c == (basa1 b)) = (iniciadorBasa b)
   | (c == (basa2 b)) = mod ((iniciadorBasa b)+1) 4
@@ -615,7 +615,7 @@ filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes l c t
   | otherwise = [x | x<-l, (trumfu2Pal t == (getPal x))]
 
 -- Donat un enter (mida llista 2 o 3), una llista de cartes i el trumfu retorna el jugador segons ordre de tirada que esta guanyant
-quiEstaGuanyant :: Integer -> [Carta] -> Trumfu -> Integer
+quiEstaGuanyant :: Int -> [Carta] -> Trumfu -> Int
 quiEstaGuanyant m (x:xs) t
   | (m == 2) && (getPal x == getPal (head xs)) = if x > head xs then 1 else 2
   | (m == 2) && (getPal x /= getPal (head xs)) = if getPal x == trumfu2Pal t then 1
