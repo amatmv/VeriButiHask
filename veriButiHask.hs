@@ -381,11 +381,11 @@ esBarraca2 trumfu maX maY = if length (cartesPalMa maX (trumfu2Pal trumfu)) >=7 
 iaEscullTrumfu :: Ma -> Trumfu
 iaEscullTrumfu llista
   | (nOros == nBastos) && (nOros == nCopes) && (nEspases == nOros) = Bu
-  | (nOros >= nBastos) && (nOros >= nEspases) && (nOros >= nCopes) = Or 
+  | (nOros >= nBastos) && (nOros >= nEspases) && (nOros >= nCopes) = Or
   | (nBastos >= nOros) && (nBastos >= nEspases) && (nBastos >= nCopes) = Ba
   | (nEspases >= nBastos) && (nEspases >= nOros) && (nEspases >= nCopes) = Es
   | (nCopes >= nBastos) && (nCopes >= nEspases) && (nCopes >= nOros) = Co
-  where 
+  where
     nOros = length (cartesPalMa llista Oros)
     nBastos = length (cartesPalMa llista Bastos)
     nEspases = length (cartesPalMa llista Copes)
