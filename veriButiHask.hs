@@ -139,13 +139,9 @@ jugar = do
   putStrLn "---------------------------------------------------------"
   putStrLn "---------------------------------------------------------"
   putStrLn " "
-  putStrLn "Entra una llavor per a generar la baralla: "
-  llavor <- getLine
-  putStrLn "S'ha generat la baralla. "
-  putStrLn " "
   putStrLn "Procedint a inicialitzar la partida..."
   putStrLn "Repartint les cartes..."
-  let mans = crearMans(repartirCartes (fst (shuffle' baralla (mkStdGen (read llavor::Int)))))
+  let mans = crearMans(repartirCartes (shuffle baralla))
   let ma1 = (mans !! 0)
   let ma2 = (mans !! 1)
   let ma3 = (mans !! 2)
@@ -360,7 +356,7 @@ teManillaOAsDeTrunfus :: Trumfu -> Ma -> Bool
 teManillaOAsDeTrunfus t (NewM l)
   | ([x | x<-l, ((trumfu2Pal t == (getPal x)) && ((getTipus x == As) || (getTipus x == As)))] == []) = False
   | otherwise = True
-  
+
 -- Aixo ha de dir si la IA hi aniria a l'hora de Contro Recontro SantVicens i Barraca polete
 esRecontra1 :: Trumfu -> Ma -> Bool
 esRecontra1 trumfu maX = if (length (cartesPalMa maX (trumfu2Pal trumfu)) >=6) || ((length (cartesPalMa maX (trumfu2Pal trumfu)) >=4) && (teManillaOAsDeTrunfus trumfu maX)) then True else False
@@ -403,15 +399,14 @@ repartirCartes' :: [[Carta]] -> [Carta] -> [[Carta]]
 repartirCartes' llista [] = llista
 repartirCartes' llista (w:x:y:z:xs) = repartirCartes' [((llista !! 0) ++ [w]), ((llista !! 1) ++ [x]), ((llista !! 2) ++ [y]), ((llista !! 3) ++ [z])] xs
 
-shuffle :: [Carta] -> Int -> [Carta]
-shuffle (carta:[]) llavor = [carta]
-shuffle (carta:cs) llavor = (cartes !! rand) : shuffle (delete rand cartes) llavor
+shuffle :: [Carta] -> [Carta]
+shuffle (carta:[]) = [carta]
+shuffle (carta:cs) = (cartes !! rand) : shuffle (delete rand cartes)
     where
-      cartes = (carta:cs)
-      rand = mod unsafeIORandom llavor
-      unsafeIORandom = (unsafePerformIO (getStdRandom (randomR (0, (length cartes)-1))))
-      delete :: Int -> [Carta] -> [Carta]
-      delete n c = (fst $ splitAt n c) ++ (tail $ snd $ splitAt n c)
+        cartes = (carta:cs)
+        rand = unsafePerformIO (getStdRandom (randomR (0, (length cartes)-1)))
+        delete :: Int -> [Carta] -> [Carta]
+        delete n c = (fst $ splitAt n c) ++ (tail $ snd $ splitAt n c)
 
 
 -- | Randomly shuffle a list without the IO Monad
