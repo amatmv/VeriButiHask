@@ -376,6 +376,7 @@ contrarTime trumfu ma1 ma2 ma3 ma4 escollidor tirador puntuacio puntuacioAcomula
         dummy <- getLine
         mainLoop trumfu ma1 ma2 ma3 ma4 escollidor tirador puntuacio puntuacioAcomulada 2
 
+
 {--- hiVas: Suport per el contrarTime ---
   Gestiona l'E/S de les decisions que pren l'Usuari tot controlant els
   errors d'entrada
@@ -389,6 +390,7 @@ hiVas = do
   else do
     putStrLn "No es una opcio valida, torna a respondre:"
     hiVas
+
 
 {--- mainLoop: S'encarrega del loop principal de la partida ---
   En aquest bloc es gestionen les tirades fins que els jugadors es queden sense
@@ -584,6 +586,7 @@ tornarRepartirCartes newEscollidor puntuacioAcomulada = do
   putStrLn "Escull un dels seguents Trumfus:"
   escollirTrumfu ma1 ma2 ma3 ma4 newEscollidor (mod (newEscollidor + 1) 4) (0,0) puntuacioAcomulada
 
+
 {--- realitzarTirada: S'encarrega de gestionar la tirada---
   En aquest bloc es gestionen l'E/S de l'usuari a l'hora de realitzar la tirada
   i gestiona tambe les tirades de la maquina.
@@ -598,6 +601,7 @@ realitzarTirada ma jugador cartesJugades trumfu = do
     return (unsafePerformIO(escollirCarta (realJugadesPossibles ma trumfu cartesJugades)))
   else do --TIRADA DE LA IA
     return (escollirCartaIA ma cartesJugades trumfu)
+
 
 {--- escollirCarta: S'encarrega de gestionar l'eleccio de la carta---
   En aquest bloc es gestionen l'E/S de l'usuari a l'hora de realitzar l'eleccio
@@ -630,6 +634,7 @@ escollirCarta cartes = do
     else do
     putStrLn "ERROR: Index no valid. Torna a escollir."
     escollirCarta cartes
+
 
 --------------------------
 --- Funcions Auxiliars ---
