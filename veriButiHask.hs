@@ -399,7 +399,7 @@ hiVas = do
   arribat als 101 punts.
 -}
 mainLoop trumfu ma1 ma2 ma3 ma4 oldEscollidor tirador oldPuntuacio puntuacioAcomulada multiplicador = do
-  if ((fst puntuacioAcomulada) == 0) && ((snd puntuacioAcomulada) == 0) then do -- PROMT INICIAL DEL LOOP
+  if ((fst puntuacioAcomulada) == 0) && ((snd puntuacioAcomulada) == 0) && ((fst oldPuntuacio) == 0) && ((snd oldPuntuacio) == 0)then do -- PROMT INICIAL DEL LOOP
     putStrLn " "
     putStrLn "------------------------------------"
     putStrLn "------   COMENÇA LA PARTIDA   ------"
@@ -658,27 +658,52 @@ puntsTuples pguanyats 3 p = ((fst(p)),((snd(p))+pguanyats))
 -}
 teManillaOAsDeTrunfus :: Trumfu -> Ma -> Bool
 teManillaOAsDeTrunfus t (NewM l)
+  | Bu _ = False
   | ([x | x<-l, ((trumfu2Pal t == (getPal x)) && ((getTipus x == As) || (getTipus x == As)))] == []) = False
   | otherwise = True
 
 
 -- TODO: documentar aquests mètodes: Pol
 esRecontra1 :: Trumfu -> Ma -> Bool
+esRecontra1 Bu maX = False
 esRecontra1 trumfu maX = if (length (cartesPalMa maX (trumfu2Pal trumfu)) >=6) || ((length (cartesPalMa maX (trumfu2Pal trumfu)) >=4) && (teManillaOAsDeTrunfus trumfu maX)) then True else False
+
+
 esContra2 :: Trumfu -> Ma -> Ma -> Bool
+esContra2 Bu maX maY = False
 esContra2 trumfu maX maY = if (length (cartesPalMa maX (trumfu2Pal trumfu)) >=4) || (length (cartesPalMa maY (trumfu2Pal trumfu)) >=4) ||  ((length (cartesPalMa maX (trumfu2Pal trumfu)) >=3) && (teManillaOAsDeTrunfus trumfu maX)) || ((length (cartesPalMa maY (trumfu2Pal trumfu)) >=3) && (teManillaOAsDeTrunfus trumfu maY)) then True else False
+
+
 santVicens2 :: Trumfu -> Ma -> Ma -> Bool
+santVicens2 Bu maX maY = False
 santVicens2 trumfu maX maY = if ((length (cartesPalMa maX (trumfu2Pal trumfu)) >=7) || (length (cartesPalMa maY (trumfu2Pal trumfu)) >=7)) then True else False
+
+
 santVicens1 :: Trumfu -> Ma -> Bool
+santVicens1 Bu maX = False
 santVicens1 trumfu maX = if (length (cartesPalMa maX (trumfu2Pal trumfu)) >=7) then True else False
+
+
 esBarraca1 :: Trumfu -> Ma -> Bool
+esBarraca1 Bu maX = False
 esBarraca1 trumfu maX = if length (cartesPalMa maX (trumfu2Pal trumfu)) >=7 then True else False
+
+
 esContra1 :: Trumfu -> Ma -> Bool
+esContra1 Bu maX = False
 esContra1 trumfu maX = if (length (cartesPalMa maX (trumfu2Pal trumfu)) >=4) || (length (cartesPalMa maX (trumfu2Pal trumfu)) >=3) then True else False
+
+
 esRecontra2 :: Trumfu -> Ma -> Ma -> Bool
+esRecontra2 Bu maX maY = False
 esRecontra2 trumfu maX maY = if (length (cartesPalMa maX (trumfu2Pal trumfu)) >=6) || ((length (cartesPalMa maX (trumfu2Pal trumfu)) >=4) && (teManillaOAsDeTrunfus trumfu maX)) || if (length (cartesPalMa maX (trumfu2Pal trumfu)) >=6) || ((length (cartesPalMa maY (trumfu2Pal trumfu)) >=4) && (teManillaOAsDeTrunfus trumfu maY)) then True else False then True else False
+
+
 esBarraca2 :: Trumfu -> Ma -> Ma -> Bool
+esBarraca2 Bu maX maY = False
 esBarraca2 trumfu maX maY = if length (cartesPalMa maX (trumfu2Pal trumfu)) >=7 || length (cartesPalMa maY (trumfu2Pal trumfu)) >=7 then True else False
+
+
 iaEscullTrumfu :: Ma -> Trumfu
 iaEscullTrumfu llista
   | (nOros == nBastos) && (nOros == nCopes) && (nEspases == nOros) = Bu
