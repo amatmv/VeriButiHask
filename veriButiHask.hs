@@ -640,18 +640,26 @@ escollirCarta cartes = do
 --- Funcions Auxiliars ---
 --------------------------
 
+{--- puntsTuples: Retorna una tuple amb les puntuacions de les dues parelles ---
+  Donat uns punta guanyats, el jugador guanyador i la puntuacio que ja tenien
+  retorna una tupla amb les puntuacions actualitzades.
+-}
 puntsTuples :: Int -> Int -> (Int,Int) -> (Int,Int)
 puntsTuples pguanyats 0 p = ((fst(p)+pguanyats),(snd(p)))
 puntsTuples pguanyats 2 p = ((fst(p)+pguanyats),(snd(p)))
 puntsTuples pguanyats 1 p = ((fst(p)),((snd(p))+pguanyats))
 puntsTuples pguanyats 3 p = ((fst(p)),((snd(p))+pguanyats))
 
+
+{--- teManillaOAsDeTrunfus: Retorna una boolea si a la ma hi ha una manilla o
+   o un as del pal del trumfu
+-}
 teManillaOAsDeTrunfus :: Trumfu -> Ma -> Bool
 teManillaOAsDeTrunfus t (NewM l)
   | ([x | x<-l, ((trumfu2Pal t == (getPal x)) && ((getTipus x == As) || (getTipus x == As)))] == []) = False
   | otherwise = True
 
--- Aixo ha de dir si la IA hi aniria a l'hora de Contro Recontro SantVicens i Barraca
+
 -- TODO: documentar aquests mètodes: Pol
 esRecontra1 :: Trumfu -> Ma -> Bool
 esRecontra1 trumfu maX = if (length (cartesPalMa maX (trumfu2Pal trumfu)) >=6) || ((length (cartesPalMa maX (trumfu2Pal trumfu)) >=4) && (teManillaOAsDeTrunfus trumfu maX)) then True else False
@@ -684,7 +692,7 @@ iaEscullTrumfu llista
 --
 
 escollirCartaIA :: Ma -> [Carta] -> Trumfu -> Carta
-escollirCartaIA ma cartes trumfu = (getCartesMa ma) !! 0
+escollirCartaIA ma cartes trumfu = (realJugadesPossibles ma trumfu cartes) !! 0
 
 getCartesMa :: Ma -> [Carta]
 getCartesMa (NewM x) = x
