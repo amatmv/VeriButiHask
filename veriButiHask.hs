@@ -939,8 +939,9 @@ tiradorCarta c b
   Input: #TODO Pol
   Output: #TODO Pol
 -}
-filtrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal :: [Carta] -> Carta -> [Carta]
-filtrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal l c
+filtrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal :: [Carta] -> Carta -> Trumfu -> [Carta]
+filtrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal l c t
+  | (getPal c == trumfu2Pal t) && (getPal (head l) /= trumfu2Pal t) = l
   | (filter (>c) l == []) = l
   | otherwise = (filter (>c) l)
 
@@ -961,8 +962,8 @@ filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes l c t
 quiEstaGuanyant :: Int -> [Carta] -> Trumfu -> Int
 quiEstaGuanyant m (x:xs) t
   | (m == 2) && (getPal x == getPal (head xs)) = if x > head xs then 1 else 2
-  | (m == 2) && (getPal x /= getPal (head xs)) = if getPal x == trumfu2Pal t then 1
-                                                 else if getPal (head xs) == trumfu2Pal t then 2
+  | (m == 2) && (getPal x /= getPal (head xs)) = if (getPal x == trumfu2Pal t) && (getPal (head xs) /= trumfu2Pal t) then 1
+                                                 else if (getPal (head xs) == trumfu2Pal t) && (getPal x /= trumfu2Pal t) then 2
                                                  else 1
   | (m == 3) && (quiEstaGuanyant 2 (take 2 (x:xs)) t == 1) = if quiEstaGuanyant 2 (x:(tail (xs))) t == 1 then 1 else 3
   | (m == 3) && (quiEstaGuanyant 2 (take 2 (x:xs)) t == 2) = if quiEstaGuanyant 2 xs t == 1 then 2 else 3
@@ -994,11 +995,11 @@ quiEstaGuanyant m (x:xs) t
 realJugadesPossibles :: Ma -> Trumfu -> [Carta] -> [Carta]
 realJugadesPossibles (NewM llista) _ [] = [x | x<-llista] -- Si no s'ha tirat cap carta començem nosaltres i podem tirar qualsevol carta
 realJugadesPossibles (NewM llista) t (x:xs)
-  | (length xs + 1 == 1) = if cartesPalMa (NewM llista) (getPal x) == [] then filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes [c | c<-llista] x t else filtrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal (cartesPalMa (NewM llista) (getPal x)) x
-  | (length xs + 1 == 2) && (quiEstaGuanyant 2 (x:xs) t == 2) = if cartesPalMa (NewM llista) (getPal x) == [] then filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes [c | c<-llista] (head xs) t else filtrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal (cartesPalMa (NewM llista) (getPal x)) (head xs)
+  | (length xs + 1 == 1) = if cartesPalMa (NewM llista) (getPal x) == [] then filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes [c | c<-llista] x t else filtrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal (cartesPalMa (NewM llista) (getPal x)) x t
+  | (length xs + 1 == 2) && (quiEstaGuanyant 2 (x:xs) t == 2) = if cartesPalMa (NewM llista) (getPal x) == [] then filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes [c | c<-llista] (head xs) t else filtrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal (cartesPalMa (NewM llista) (getPal x)) (head xs) t
   | (length xs + 1 == 2) && (quiEstaGuanyant 2 (x:xs) t == 1) = if cartesPalMa (NewM llista) (getPal x) == [] then [c | c<-llista] else cartesPalMa (NewM llista) (getPal x)
-  | (length xs + 1 == 3) && (quiEstaGuanyant 3 (x:xs) t == 1) = if cartesPalMa (NewM llista) (getPal x) == [] then filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes [c | c<-llista] x t else filtrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal (cartesPalMa (NewM llista) (getPal x)) x
-  | (length xs + 1 == 3) && (quiEstaGuanyant 3 (x:xs) t == 3) = if cartesPalMa (NewM llista) (getPal x) == [] then filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes [c | c<-llista] (last xs) t else filtrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal (cartesPalMa (NewM llista) (getPal x)) (last xs)
+  | (length xs + 1 == 3) && (quiEstaGuanyant 3 (x:xs) t == 1) = if cartesPalMa (NewM llista) (getPal x) == [] then filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes [c | c<-llista] x t else filtrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal (cartesPalMa (NewM llista) (getPal x)) x t
+  | (length xs + 1 == 3) && (quiEstaGuanyant 3 (x:xs) t == 3) = if cartesPalMa (NewM llista) (getPal x) == [] then filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes [c | c<-llista] (last xs) t else filtrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal (cartesPalMa (NewM llista) (getPal x)) (last xs) t
   | otherwise = if cartesPalMa (NewM llista) (getPal x) == [] then [c | c<-llista] else cartesPalMa (NewM llista) (getPal x)
 
 
