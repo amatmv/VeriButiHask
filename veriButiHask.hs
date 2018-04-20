@@ -96,7 +96,7 @@ show2 (NewM (x:xs)) = ((show x) ++ "-" ++ (show2 (NewM xs)))
   La Basa sempre conté quatre cartes i és iniciada per un jugador.
   És comparable.
 -}
-data Basa = NewB (Integer, Carta, Carta, Carta, Carta) deriving Eq
+data Basa = NewB (Int, Carta, Carta, Carta, Carta) deriving Eq
 
 instance Show Basa where --Fer Basa mostrable.
   show (NewB (j,w,x,y,z))= ("Tirada iniciada per el jugador: " ++ (show j) ++ "\n" ++ "  Tirada 1: " ++ (show w) ++ "\n" ++ "  Tirada 2: " ++ (show x) ++ "\n" ++ "  Tirada 3: " ++ (show y) ++ "\n" ++ "  Tirada 4: " ++ (show z))
@@ -139,9 +139,12 @@ jugar = do
   putStrLn "---------------------------------------------------------"
   putStrLn "---------------------------------------------------------"
   putStrLn " "
+  putStrLn "Entra una llavor per a generar la baralla: "
+  llavor <- getLine
+  putStrLn "S'ha generat la baralla. "
   putStrLn "Procedint a inicialitzar la partida..."
   putStrLn "Repartint les cartes..."
-  let mans = crearMans(repartirCartes (shuffle baralla))
+  let mans = crearMans(repartirCartes (shuffle baralla (read llavor::Int)))
   let ma1 = (mans !! 0)
   let ma2 = (mans !! 1)
   let ma3 = (mans !! 2)
@@ -475,19 +478,24 @@ repartirCartes' :: [[Carta]] -> [Carta] -> [[Carta]]
 repartirCartes' llista [] = llista
 repartirCartes' llista (w:x:y:z:xs) = repartirCartes' [((llista !! 0) ++ [w]), ((llista !! 1) ++ [x]), ((llista !! 2) ++ [y]), ((llista !! 3) ++ [z])] xs
 
-shuffle :: [Carta] -> [Carta]
-shuffle (carta:[]) = [carta]
-shuffle (carta:cs) = (cartes !! rand) : shuffle deleteRandomCard
+
+{- shuffle
+  Input: Una llista de cartes
+  Output: La llista entrada barrejada
+-}
+shuffle :: [Carta] -> Int -> [Carta]
+shuffle (carta:[]) llavor = [carta]
+shuffle (carta:cs) llavor = (cartes !! rand) : shuffle deleteRandomCard llavor
     where
         cartes = (carta:cs)
-        rand = unsafePerformIO (getStdRandom (randomR (0, (length cartes)-1)))
+        rand = mod (unsafePerformIO (getStdRandom (randomR (0, (length cartes)-1))) * llavor) (length cartes)
         deleteRandomCard = (fst $ splitAt rand cartes) ++ (tail $ snd $ splitAt rand cartes)
 
 {- getCardValue
   Input: Un TipusCarta
   Output: Valor numèric corresponent al tipus de la carta
 -}
-getCardValue :: TipusCarta ->  Integer
+getCardValue :: TipusCarta ->  Int
 getCardValue tipus = case tipus of
       Manilla -> 12
       As -> 11
@@ -506,7 +514,7 @@ getCardValue tipus = case tipus of
   Input: El TipusCarta
   Output: El valor numèric corresponent a la puntuació d'aquest TipusCarta
 -}
-getCardPunctuation :: TipusCarta ->  Integer
+getCardPunctuation :: TipusCarta ->  Int
 getCardPunctuation tipus = case tipus of
       Sota -> 1
       Cavall -> 2
@@ -519,7 +527,7 @@ getCardPunctuation tipus = case tipus of
   Input: Conjunt de cartes
   Output: Puntuació del conjunt de cartes
 -}
-punts :: [Carta] -> Integer
+punts :: [Carta] -> Int
 punts [] = 0
 punts ((NewC (pal, tipus)):cv) = (getCardPunctuation tipus) + (punts cv)
 
@@ -527,7 +535,7 @@ punts ((NewC (pal, tipus)):cv) = (getCardPunctuation tipus) + (punts cv)
   Input: Donat un trumfu, un conjunt de cartes i el numero de tirador inicial.
   Output: Retorna una tupla que conté les cartes que ha guanyat cada grup
 -}
-cartesGuanyades :: Trumfu -> [Carta] -> Integer -> ([Carta],[Carta])
+cartesGuanyades :: Trumfu -> [Carta] -> Int -> ([Carta],[Carta])
 cartesGuanyades trumfu [] _ = ([],[])
 cartesGuanyades trumfu (carta:xs) tirador
   | (length (carta:xs)) == 4  = if mod _guanyador 2 == 0 then (fst _cas_base ++ _cartes_guanyades, snd _cas_base) else (fst _cas_base, snd _cas_base ++ _cartes_guanyades)
@@ -540,11 +548,10 @@ cartesGuanyades trumfu (carta:xs) tirador
     _baseActual = (NewB (tirador, carta, xs !! 0, xs !! 1, xs !! 2))
     _cartes_guanyades = cartesBasa (NewB (_guanyador, carta, xs !! 0, xs !! 1, xs !! 2))
 
-nombreCorrecteDeCartes :: [Carta] -> Bool
-nombreCorrecteDeCartes (carta:xs) = (mod (length (carta:xs)) 4) == 0
-
-nombreJugadorsCorrecte :: Integer -> Bool
-nombreJugadorsCorrecte jugadors = jugadors >= 1 && jugadors <= 4
+puntsParelles :: [[Carta]] -> Trumfu -> [Carta] -> Int -> Maybe (Int, Int)
+puntsParelles mans t cartes jugador = Just (punts $ fst _cartes_guanyades, punts $ snd _cartes_guanyades)
+  where
+    _cartes_guanyades = cartesGuanyades t cartes jugador
 
 {- getPal
   Input: Una Carta.
@@ -574,7 +581,7 @@ cartesPalBasa (NewB (j,w,x,y,z)) pal = [x | x<-[w,x,y,z], (pal == (getPal x))]
 cartesPalMa :: Ma -> Pal -> [Carta]
 cartesPalMa (NewM llista) pal= [x | x<-llista, (pal == (getPal x))]
 
-{- puntsParelles
+{- cartesPal
   Input: Un conjunt de Cartes i un Pal
   Output: Conjunt de Cartes que són del Pal especificat
 -}
@@ -613,7 +620,7 @@ basa4 (NewB (_,_,_,_,z)) = z
   Input: Una basa
   Output: Retorna el jugador que tira la primera carta de la basa
 -}
-iniciadorBasa :: Basa -> Integer
+iniciadorBasa :: Basa -> Int
 iniciadorBasa (NewB (j,_,_,_,_)) = j
 
 {- cartesBasa
@@ -648,7 +655,7 @@ pal2Trumfu pal = case pal of
   Copes -> Co
   Espases -> Es
 
-jugadorGuanyaBasa :: Basa -> Trumfu -> Integer
+jugadorGuanyaBasa :: Basa -> Trumfu -> Int
 jugadorGuanyaBasa b t = tiradorCarta (cartaGuanyadora (basa1 b) (cartesBasa b) (palGuanyadorBasa b t)) b
 
 cartaGuanyadora :: Carta -> [Carta] -> Pal -> Carta
@@ -662,7 +669,7 @@ mata c1 c2 p
   | c1 >= c2 = c1
   | c2 > c1 = c2
 
-tiradorCarta :: Carta -> Basa -> Integer
+tiradorCarta :: Carta -> Basa -> Int
 tiradorCarta c b
   | (c == (basa1 b)) = (iniciadorBasa b)
   | (c == (basa2 b)) = mod ((iniciadorBasa b)+1) 4
@@ -683,7 +690,7 @@ filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes l c t
   | otherwise = [x | x<-l, (trumfu2Pal t == (getPal x))]
 
 -- Donat un enter (mida llista 2 o 3), una llista de cartes i el trumfu retorna el jugador segons ordre de tirada que esta guanyant
-quiEstaGuanyant :: Integer -> [Carta] -> Trumfu -> Integer
+quiEstaGuanyant :: Int -> [Carta] -> Trumfu -> Int
 quiEstaGuanyant m (x:xs) t
   | (m == 2) && (getPal x == getPal (head xs)) = if x > head xs then 1 else 2
   | (m == 2) && (getPal x /= getPal (head xs)) = if getPal x == trumfu2Pal t then 1
