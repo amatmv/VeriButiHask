@@ -6,6 +6,6 @@ The rules of the game can be found [here](http://www.butinet.cat/index.php?pagin
 
 ### Authors: 
 
-- Adrià Nicolau Beltran [AdriNicu](https://github.com/AdriNicu)
-- Pol Sala Lidón [PolSala](https://github.com/polsala)
-- Amat Martínez Vilà [amatmv](https://github.com/amatmv)
+- [Adrià Nicolau Beltran](https://github.com/AdriNicu)
+- [Pol Sala Lidón](https://github.com/polsala)
+- [Amat Martínez Vilà](https://github.com/amatmv)
