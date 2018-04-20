@@ -37,12 +37,6 @@ instance Show Trumfu where
   show Es = "Espases"
   show Bu = "Butifarra"
 
-{-------- MULTIPLICADOR: Multiplicadors de la partida ------
-  El Multiplicador es el valor per el qual es multiplica la puntuació.
-  És mostrable i comparable.
--}
-data Multiplicador = Contro | Recontro | SantVicens | Barraca
-              deriving (Show, Eq)
 
 {--------- TIPUSCARTA: Numero de la carta ------
   Cada Pal té 12 numeros, que van des del 1 fins al 12.
@@ -98,21 +92,22 @@ show2 (NewM (x:xs)) = ((show x) ++ "-" ++ (show2 (NewM xs)))
 -}
 data Basa = NewB (Int, Carta, Carta, Carta, Carta) deriving Eq
 
-instance Show Basa where --Fer Basa mostrable.
+instance Show Basa where
   show (NewB (j,w,x,y,z))= ("Tirada iniciada per el jugador: " ++ (show j) ++ "\n" ++ "  Tirada 1: " ++ (show w) ++ "\n" ++ "  Tirada 2: " ++ (show x) ++ "\n" ++ "  Tirada 3: " ++ (show y) ++ "\n" ++ "  Tirada 4: " ++ (show z))
 
 
--------------------------------
---- Definicio de la baralla ---
--------------------------------
+----------------------------------------
+--- Definicio de la constant baralla ---
+----------------------------------------
 
 baralla = [NewC(Oros, As), NewC(Oros, Dos), NewC(Oros, Tres), NewC(Oros, Quatre), NewC(Oros, Cinc), NewC(Oros, Sis), NewC(Oros, Set), NewC(Oros, Vuit), NewC(Oros, Manilla), NewC(Oros, Sota), NewC(Oros, Cavall), NewC(Oros, Rei), NewC(Espases, As), NewC(Espases, Dos), NewC(Espases, Tres), NewC(Espases, Quatre), NewC(Espases, Cinc), NewC(Espases, Sis), NewC(Espases, Set), NewC(Espases, Vuit), NewC(Espases, Manilla), NewC(Espases, Sota), NewC(Espases, Cavall), NewC(Espases, Rei), NewC(Bastos, As), NewC(Bastos, Dos), NewC(Bastos, Tres), NewC(Bastos, Quatre), NewC(Bastos, Cinc), NewC(Bastos, Sis), NewC(Bastos, Set), NewC(Bastos, Vuit), NewC(Bastos, Manilla), NewC(Bastos, Sota), NewC(Bastos, Cavall), NewC(Bastos, Rei), NewC(Copes, As), NewC(Copes, Dos), NewC(Copes, Tres), NewC(Copes, Quatre), NewC(Copes, Cinc), NewC(Copes, Sis), NewC(Copes, Set), NewC(Copes, Vuit), NewC(Copes, Manilla), NewC(Copes, Sota), NewC(Copes, Cavall), NewC(Copes, Rei)]
 
 
 -----------------------------------
---- Implementació de la partida ---
+--- Implementació de la logica de la partida ---
 -----------------------------------
 
+{--- jugar: Inicialitza una partida ---}
 jugar = do
   putStrLn "---------------------------------------------------------"
   putStrLn "--------------------- VeriButiHask ----------------------"
@@ -155,7 +150,7 @@ jugar = do
   putStrLn " "
   print(ma1)
   putStrLn " "
-  putStrLn "El primer jugador a tirar ets tu!"
+  putStrLn "El primer jugador a tirar ets tu Jugador 1!"
   putStrLn " "
   putStrLn "---------------------------------"
   putStrLn "------   ESCOLLIR TRUMFU   ------"
@@ -164,9 +159,14 @@ jugar = do
   putStrLn "Escull un dels seguents Trumfus:"
   escollirTrumfu ma1 ma2 ma3 ma4 0 1 (0,0) (0,0)
 
+
+{--- escollirTrumfu: S'encarrega de gestionar la logica d'escollit un Trumfu ---
+  Gestiona l'E/S si es tracta d'un usuari o ho fa automatitzat si es el torn
+  d'escollir de la IA.
+-}
 escollirTrumfu ma1 ma2 ma3 ma4 escollidor tirador puntuacio puntuacioAcomulada = do
   putStrLn "->> Oros, Bastos, Copes, Espases, Butifarra <<-"
-  if escollidor == 0 then do --escullo jo
+  if escollidor == 0 then do --ESCULL USUARI
     trumfu <- getLine
     putStrLn " "
     if trumfu == "Oros" then do
@@ -187,47 +187,52 @@ escollirTrumfu ma1 ma2 ma3 ma4 escollidor tirador puntuacio puntuacioAcomulada =
     else do
       putStrLn "No es una opcio correcte, torna a escollir un  dels seguents Trumfus:"
       escollirTrumfu ma1 ma2 ma3 ma4 escollidor tirador puntuacio puntuacioAcomulada
-  else if escollidor == 1 then do -- la maquina 2 tria
+  else if escollidor == 1 then do -- ESCULL IA 2 EN FUNCIO DE LA SEVA MA
     let trumfu = iaEscullTrumfu ma2
     putStrLn ("En aquesta partida el Trumfu escollit es " ++ show(trumfu) ++"!")
     contrarTime trumfu ma1 ma2 ma3 ma4 escollidor tirador puntuacio puntuacioAcomulada
-  else if escollidor == 2 then do -- la maquina 3 tria
+  else if escollidor == 2 then do -- ESCULL IA 3 EN FUNCIO DE LA SEVA MA
     let trumfu = iaEscullTrumfu ma3
     putStrLn ("En aquesta partida el Trumfu escollit es " ++ show(trumfu) ++"!")
     contrarTime trumfu ma1 ma2 ma3 ma4 escollidor tirador puntuacio puntuacioAcomulada
-  else do -- la maquina 4 tria
+  else do -- ESCULL IA 4 EN FUNCIO DE LA SEVA MA
     let trumfu = iaEscullTrumfu ma4
     putStrLn ("En aquesta partida el Trumfu escollit es " ++ show(trumfu) ++"!")
     contrarTime trumfu ma1 ma2 ma3 ma4 escollidor tirador puntuacio puntuacioAcomulada
 
+
+{--- contrarTime: S'encarrega de gestionar la logica de Contrar, Recontrar, Sant Viçenc i Barraca ---
+  Gestiona l'E/S si es tracta d'un usuari o ho fa automatitzat si es tracta d'una
+  decisio de la IA.
+-}
 contrarTime trumfu ma1 ma2 ma3 ma4 escollidor tirador puntuacio puntuacioAcomulada = do
   putStrLn " "
   putStrLn "-----------------------------------------------------------"
   putStrLn "------   CONTRAR, RECONTRAR, SANT VICENÇ O BARRACA   ------"
   putStrLn "-----------------------------------------------------------"
   putStrLn " "
-  if (escollidor == 0) || (escollidor == 2) then do -- La maquina ha de contrar
-    if esContra2 trumfu ma2 ma4 then do -- La maquina contra
-      putStrLn "La parella formada per el jugador 2 i 4 creuen que poden rascar mes punts de la partida, contren!"
+  if (escollidor == 0) || (escollidor == 2) then do -- O L'USUARI O LA PARELLA DE L'USARI HAN ESCOLLIT EL TRUMFU
+    if esContra2 trumfu ma2 ma4 then do -- LA MAQUINA HA DE DECIDIR SI CONTRA O NO
+      putStrLn "La parella formada per el jugador 2 i 4 creuen que poden rascar mes punts de la partida, Contren!"
       putStrLn "Jugadors 1 i 3, penseu fer alguna cosa al respecte? Recontreu?"
       putStrLn "(S/N)"
       let parellaVa = esRecontra1 trumfu ma3
       let joVaig = (unsafePerformIO hiVas)
-      if parellaVa || joVaig then do --recontrem!
+      if parellaVa || joVaig then do -- SI L'USUARI O LA SEVA PARELLA HI VAN ES RECONTRA
         if parellaVa && joVaig then do
-          putStrLn "La parella formada per el jugador 1 i 3 ho tenen molt clar i recontren!!"
+          putStrLn "La parella formada per el jugador 1 i 3 ho tenen molt clar i Recontren!!"
         else if parellaVa then do
-          putStrLn "El jugador 3 ho te molt clar i recontra!!"
+          putStrLn "El jugador 3 ho te molt clar i Recontra!!"
         else do
-          putStrLn "El jugador 1 ho te molt clar i recontra!!"
-        if (trumfu /= Bu) then do --Si el trumfu es Butifarra ja  no es pot multiplicar mes
-          if santVicens2 trumfu ma2 ma4 then do -- la maquina fa sant vicens
+          putStrLn "El jugador 1 ho te molt clar i Recontra!!"
+        if (trumfu /= Bu) then do -- SI EL TRUMFU NO ES BUTIFARRA PODEM SEGUIR PER SANT VICENÇ
+          if santVicens2 trumfu ma2 ma4 then do -- LA MAQUINA HA DE DECIDIR SI FER SANT VICENÇ O NO
             putStrLn "La parella formada per el jugador 2 i 4 van molt forts i canten Sant Vicenç!!!"
             putStrLn "Jugadors 1 i 3, us planteu? M'ha semblat escoltar Barraca?"
             putStrLn "(S/N)"
             let parellaVa = esBarraca1 trumfu ma3
             let joVaig = (unsafePerformIO hiVas)
-            if parellaVa || joVaig then do --cantem barraca
+            if parellaVa || joVaig then do -- SI L'USUARI O LA SEVA PARELLA HI VAN ES CANTA BARRACA
               if parellaVa && joVaig then do
                 putStrLn "La parella formada per el jugador 1 i 3 tiren la casa per la finestra i canten BARRACA!!!!"
               else if parellaVa then do
@@ -236,141 +241,145 @@ contrarTime trumfu ma1 ma2 ma3 ma4 escollidor tirador puntuacio puntuacioAcomula
                 putStrLn "El jugador 1 tira la casa per la finestra i canta BARRACA!!!!"
               putStrLn " "
               putStrLn "Fins aqui hem arribat, procedim doncs a començar la ma amb un multiplicador de puntuacio x16!!"
-              putStrLn "Pitja Intro per continuar..."
+              putStrLn "Prem INTRO per continuar..."
               dummy <- getLine
               mainLoop trumfu ma1 ma2 ma3 ma4 escollidor tirador puntuacio puntuacioAcomulada 16
-            else do --no cantem barraca, comensem la partida amb sant vicens
+            else do -- NI L'USUARI NI LA SEVA PARELLA HAN CANTAT BARRACA
               putStrLn "La parella formada per el jugador 1 i 3  no ho han vist clar i han deixat passar la oportunitat de cantar Barraca..."
               putStrLn " "
               putStrLn "Procedim doncs a començar la ma amb un multiplicador de puntuacio x8!"
-              putStrLn "Pitja Intro per continuar..."
+              putStrLn "Prem INTRO per continuar..."
               dummy <- getLine
               mainLoop trumfu ma1 ma2 ma3 ma4 escollidor tirador puntuacio puntuacioAcomulada 8
-          else do --la maquina no fa sant vicencs, començem la partida recontrada i sense buti
+          else do -- LA MAQUINA NO HA FET SANT VICENÇ
             putStrLn "La parella formada per el jugador 1 i 3  no ho han vist clar i han deixat passar la oportunitat de cantar Sant Vicenç..."
             putStrLn " "
             putStrLn "Procedim doncs a començar la ma amb un multiplicador de puntuacio x4!"
-            putStrLn "Pitja Intro per continuar..."
+            putStrLn "Prem INTRO per continuar..."
             dummy <- getLine
             mainLoop trumfu ma1 ma2 ma3 ma4 escollidor tirador puntuacio puntuacioAcomulada 4
-        else do -- Si el trumfu és butifarra, procedim a començar la partida Recontrada
+        else do -- SI EL TRUMFU ES BUTIFARRA COMENÇEM LA PARTIDA RECONTRADA
           putStrLn "Com que el Trumfu es Butifarra, ja no es pot augmentar mes l'index de multiplicacio."
           putStrLn " "
           putStrLn "Procedim doncs a començar la ma amb un multiplicador de puntuacio x8!"
-          putStrLn "Pitja Intro per continuar..."
+          putStrLn "Prem INTRO per continuar..."
           dummy <- getLine
           mainLoop trumfu ma1 ma2 ma3 ma4 escollidor tirador puntuacio puntuacioAcomulada 8
-      else do --no recontrem, inici partida amb contrat
-        putStrLn "La parella formada per el jugador 1 i 3  no ho han vist clar i han deixat passar la oportunitat de recontrar..."
-        if (trumfu /= Bu) then do
+      else do -- NI L'USUARI NI LA SEVA PARELLA HAN CONTRAT
+        putStrLn "La parella formada per el jugador 1 i 3  no ho han vist clar i han deixat passar la oportunitat de Recontrar..."
+        if (trumfu /= Bu) then do -- SI EL TRUMFU ES BUTIFARRA ES SUMA 2 AL INDEX DE MULTIPLICACIO
           putStrLn " "
           putStrLn "Procedim doncs a començar la ma amb un multiplicador de puntuacio x2!"
-          putStrLn "Pitja Intro per continuar..."
+          putStrLn "Prem INTRO per continuar..."
           dummy <- getLine
           mainLoop trumfu ma1 ma2 ma3 ma4 escollidor tirador puntuacio puntuacioAcomulada 2
         else do
           putStrLn " "
           putStrLn "Procedim doncs a començar la ma amb un multiplicador de puntuacio x(2+2), ja que el Trumfu es Butifarra!"
-          putStrLn "Pitja Intro per continuar..."
+          putStrLn "Prem INTRO per continuar..."
           dummy <- getLine
           mainLoop trumfu ma1 ma2 ma3 ma4 escollidor tirador puntuacio puntuacioAcomulada 4
-    else do --la maquina no contra, comensem la partida sense multiplicador
-      putStrLn "La parella formada per el jugador 2 i 4 no ho han vist clar i han deixat passar la oportunitat de contrar..."
-      if (trumfu /= Bu) then do
+    else do -- LA MAQUINA NO HA CONTRAT
+      putStrLn "La parella formada per el jugador 2 i 4 no ho han vist clar i han deixat passar la oportunitat de Contrar..."
+      if (trumfu /= Bu) then do -- SI EL TRUMFU ES BUTIFARRA ES SUMA 2 AL INDEX DE MULTIPLICACIO
         putStrLn " "
         putStrLn "Procedim doncs a començar la ma sense multiplicadors de puntuacio."
-        putStrLn "Pitja Intro per continuar..."
+        putStrLn "Prem INTRO per continuar..."
         dummy <- getLine
         mainLoop trumfu ma1 ma2 ma3 ma4 escollidor tirador puntuacio puntuacioAcomulada 1
       else do
         putStrLn " "
         putStrLn "Procedim doncs a començar la ma amb un multiplicador de puntuacio x(0+2), ja que el Trumfu es Butifarra!"
-        putStrLn "Pitja Intro per continuar..."
+        putStrLn "Prem INTRO per continuar..."
         dummy <- getLine
         mainLoop trumfu ma1 ma2 ma3 ma4 escollidor tirador puntuacio puntuacioAcomulada 2
-  else do
+  else do -- LA MAQUINA QUE NO ES PARELLA DE L'USUARI HA ESCOLLIT EL TRUMFU
     putStrLn "Jugadors 1 i 3, voleu contrar?"
     putStrLn "(S/N)"
     let parellaVa = esContra1 trumfu ma3
     let joVaig = (unsafePerformIO hiVas)
-    if parellaVa || joVaig then do --contrem
+    if parellaVa || joVaig then do -- SI L'USUARI O LA SEVA PARELLA HI VAN ES CONTRA
       if parellaVa && joVaig then do
-        putStrLn "La parella formada per el jugador 1 i 3 creuen que poden rascar mes punts de la partida, contren!"
+        putStrLn "La parella formada per el jugador 1 i 3 creuen que poden rascar mes punts de la partida i Contren!"
       else if parellaVa then do
-        putStrLn "El jugador 3 creu que pot rascar mes punts de la partida, contra!"
+        putStrLn "El jugador 3 creu que pot rascar mes punts de la partida i Contra!"
       else do
-        putStrLn "El jugador 1 creu que pot rascar mes punts de la partida, contra!"
-      if esRecontra2 trumfu ma2 ma4 then do --la maquina ens recontra!
+        putStrLn "El jugador 1 creu que pot rascar mes punts de la partida i Contra!"
+      if esRecontra2 trumfu ma2 ma4 then do -- LA MAQUINA HA DE DECIDIR SI RECONTRA O NO
         putStrLn "La parella formada per el jugador 2 i 4 ho tenen molt clar i recontren!!"
-        if (trumfu /= Bu) then do --Si el trumfu es Butifarra ja  no es pot multiplicar mes
+        if (trumfu /= Bu) then do -- SI EL TRUMFU NO ES BUTIFARRA PODEM SEGUIR PER SANT VICENÇ
           putStrLn "Jugadors 1 i 3, penseu fer alguna cosa al respecte? M'ha semblat escoltar Sant Vicenç?"
           putStrLn "(S/N)"
           let parellaVa = santVicens1 trumfu ma3
           let joVaig = (unsafePerformIO hiVas)
-          if parellaVa || joVaig then do -- cantem sant vicens
+          if parellaVa || joVaig then do -- SI L'USUARI O LA SEVA PARELLA HI VAN ES CANTA SANT VICENÇ
             if parellaVa && joVaig then do
               putStrLn "La parella formada per el jugador 1 i 3 van molt forts i canten Sant Vicenç!!!"
             else if parellaVa then do
               putStrLn "El jugador 3 va molt fort i canta Sant Vicenç!!!"
             else do
               putStrLn "El jugador 1 va molt fort i canta Sant Vicenç!!!"
-            if esBarraca2 trumfu ma2 ma4 then do --la maquina canta barraca
+            if esBarraca2 trumfu ma2 ma4 then do -- LA MAQUINA HA DE DECIDIR SI CANTA BARRACA O NO
               putStrLn "La parella formada per el jugador 2 i 4 tiren la casa per la finestra i canten BARRACA!!!!"
               putStrLn " "
               putStrLn "Fins aqui hem arribat, procedim doncs a començar la ma amb un multiplicador de puntuacio x16!!"
-              putStrLn "Pitja Intro per continuar..."
+              putStrLn "Prem INTRO per continuar..."
               dummy <- getLine
               mainLoop trumfu ma1 ma2 ma3 ma4 escollidor tirador puntuacio puntuacioAcomulada 16
-            else do --no cantem barraca, comensem la partida amb sant vicens
-              putStrLn "La parella formada per el jugador 2 i 4  no ho han vist clar i han deixat passar la oportunitat de cantar Barraca..."
+            else do -- LA MAQUINA NO HA CANTAT BARRACA
+              putStrLn "La parella formada per el jugador 2 i 4 no ho han vist clar i han deixat passar la oportunitat de cantar Barraca..."
               putStrLn " "
               putStrLn "Procedim doncs a començar la ma amb un multiplicador de puntuacio x8!"
-              putStrLn "Pitja Intro per continuar..."
+              putStrLn "Prem INTRO per continuar..."
               dummy <- getLine
               mainLoop trumfu ma1 ma2 ma3 ma4 escollidor tirador puntuacio puntuacioAcomulada 8
-          else do --no cantem sant vicencs, començem la partida recontrada i sense buti
-            putStrLn "La parella formada per el jugador 1 i 3  no ho han vist clar i han deixat passar la oportunitat de cantar Sant Vicenç..."
+          else do -- NI L'USUARI NI LA SEVA PARELLA HAN CANTAT SANT VICENÇ
+            putStrLn "La parella formada per el jugador 1 i 3 no ho han vist clar i han deixat passar la oportunitat de cantar Sant Vicenç..."
             putStrLn " "
             putStrLn "Procedim doncs a començar la ma amb un multiplicador de puntuacio x4!"
-            putStrLn "Pitja Intro per continuar..."
+            putStrLn "Prem INTRO per continuar..."
             dummy <- getLine
             mainLoop trumfu ma1 ma2 ma3 ma4 escollidor tirador puntuacio puntuacioAcomulada 4
-        else do -- Si el trumfu és butifarra, procedim a començar la partida Recontrada
+        else do -- SI EL TRUMFU ES BUTIFARRA COMENÇEM LA PARTIDA RECONTRADA
           putStrLn "Com que el Trumfu es Butifarra, ja no es pot augmentar mes l'index de multiplicacio."
           putStrLn " "
           putStrLn "Procedim doncs a començar la ma amb un multiplicador de puntuacio x8!"
-          putStrLn "Pitja Intro per continuar..."
+          putStrLn "Prem INTRO per continuar..."
           dummy <- getLine
           mainLoop trumfu ma1 ma2 ma3 ma4 escollidor tirador puntuacio puntuacioAcomulada 8
-      else do --la maquina no recontra, comensem contrats
-        putStrLn "La parella formada per el jugador 2 i 4  no ho han vist clar i han deixat passar la oportunitat de recontrar..."
-        if (trumfu /= Bu) then do
+      else do -- LA MAQUINA NO RECONTRA
+        putStrLn "La parella formada per el jugador 2 i 4 no ho han vist clar i han deixat passar la oportunitat de Recontrar..."
+        if (trumfu /= Bu) then do -- SI EL TRUMFU ES BUTIFARRA ES SUMA 2 AL INDEX DE MULTIPLICACIO
           putStrLn " "
           putStrLn "Procedim doncs a començar la ma amb un multiplicador de puntuacio x2!"
-          putStrLn "Pitja Intro per continuar..."
+          putStrLn "Prem INTRO per continuar..."
           dummy <- getLine
           mainLoop trumfu ma1 ma2 ma3 ma4 escollidor tirador puntuacio puntuacioAcomulada 2
         else do
           putStrLn " "
           putStrLn "Procedim doncs a començar la ma amb un multiplicador de puntuacio x(2+2), ja que el Trumfu es Butifarra!"
-          putStrLn "Pitja Intro per continuar..."
+          putStrLn "Prem INTRO per continuar..."
           dummy <- getLine
           mainLoop trumfu ma1 ma2 ma3 ma4 escollidor tirador puntuacio puntuacioAcomulada 4
-    else do --no contrem
-      putStrLn "La parella formada per el jugador 1 i 3 no ho han vist clar i han deixat passar la oportunitat de contrar..."
-      if (trumfu /= Bu) then do
+    else do -- NI L'USUARI NI LA SEVA PARELLA HAN CONTRAT
+      putStrLn "La parella formada per el jugador 1 i 3 no ho han vist clar i han deixat passar la oportunitat de Contrar..."
+      if (trumfu /= Bu) then do -- SI EL TRUMFU ES BUTIFARRA ES SUMA 2 AL INDEX DE MULTIPLICACIO
         putStrLn " "
         putStrLn "Procedim doncs a començar la ma sense multiplicadors de puntuacio."
-        putStrLn "Pitja Intro per continuar..."
+        putStrLn "Prem INTRO per continuar..."
         dummy <- getLine
         mainLoop trumfu ma1 ma2 ma3 ma4 escollidor tirador puntuacio puntuacioAcomulada 1
       else do
         putStrLn " "
         putStrLn "Procedim doncs a començar la ma amb un multiplicador de puntuacio x(0+2), ja que el Trumfu es Butifarra!"
-        putStrLn "Pitja Intro per continuar..."
+        putStrLn "Prem INTRO per continuar..."
         dummy <- getLine
         mainLoop trumfu ma1 ma2 ma3 ma4 escollidor tirador puntuacio puntuacioAcomulada 2
 
+{--- hiVas: Suport per el contrarTime ---
+  Gestiona l'E/S de les decisions que pren l'Usuari tot controlant els
+  errors d'entrada
+-}
 hiVas = do
   eleccio <- getLine
   if eleccio == "S" || eleccio == "s" then do
@@ -381,176 +390,169 @@ hiVas = do
     putStrLn "No es una opcio valida, torna a respondre:"
     hiVas
 
+{--- mainLoop: S'encarrega del loop principal de la partida ---
+  En aquest bloc es gestionen les tirades fins que els jugadors es queden sense
+  cartes a la ma. Quan aixo passa es recompten els punts i es tornen a
+  repartir cartes o be s'acaba la partida ja que algun de les parelles haura
+  arribat als 101 punts.
+-}
 mainLoop trumfu ma1 ma2 ma3 ma4 oldEscollidor tirador oldPuntuacio puntuacioAcomulada multiplicador = do
-  if ((fst puntuacioAcomulada) == 0) && ((snd puntuacioAcomulada) == 0) then do --acaba de comneçar la partida i fem el promp
+  if ((fst puntuacioAcomulada) == 0) && ((snd puntuacioAcomulada) == 0) then do -- PROMT INICIAL DEL LOOP
     putStrLn " "
     putStrLn "------------------------------------"
     putStrLn "------   COMENÇA LA PARTIDA   ------"
     putStrLn "------------------------------------"
     putStrLn " "
-  else if (length(getCartesMa ma1)) == 12 then do
+  else if (length(getCartesMa ma1)) == 12 then do -- PROMT D'HAVER REPARTIT UN ALTRE COP
     putStrLn " "
     putStrLn "--------------------------------------------------------"
     putStrLn "------   CONTINUEM LA PARTIDA AMB LES NOVES MANS  ------"
     putStrLn "--------------------------------------------------------"
     putStrLn " "
-  else do
+  else do -- PROMT DE NOVA RONDA
     putStrLn " "
     putStrLn "-----------------------------------------------"
     putStrLn "-----------------  NOVA RONDA -----------------"
     putStrLn "-----------------------------------------------"
     putStrLn " "
 
-  -- putStrLn ("Debugg length ma 1: "++show(length(getCartesMa ma1)))
-  -- putStrLn ("Debugg length ma 2: "++show(length(getCartesMa ma2)))
-  -- putStrLn ("Debugg length ma 3: "++show(length(getCartesMa ma3)))
-  -- putStrLn ("Debugg length ma 4: "++show(length(getCartesMa ma4)))
   --TORN 1
   let tornTirada1 = tirador
   let llistaJugadors = [ma1,ma2,ma3,ma4]
   putStrLn ("--- TORN DEL JUGADOR "++show(tornTirada1+1)++" ---")
-  -- putStrLn ("Debugg: "++show(llistaJugadors !! tornTirada1))
   let cartaTirada1 = unsafePerformIO(realitzarTirada (llistaJugadors !! tornTirada1) tornTirada1 [] trumfu)
   putStrLn (show cartaTirada1)
   putStrLn ("El jugador "++show(tornTirada1+1)++" ha tirat la següent carta: "++show(cartaTirada1))
   putStrLn ("Actualment sobre la taula hi han les següents cartes: "++show(cartaTirada1))
   putStrLn " "
+
   --TORN 2
   let tornTirada2 = mod (tornTirada1 + 1) 4
   putStrLn ("--- TORN DEL JUGADOR "++show(tornTirada2+1)++" ---")
-  -- putStrLn ("Debugg: "++show(llistaJugadors !! tornTirada2))
   let cartaTirada2 = unsafePerformIO(realitzarTirada (llistaJugadors !! tornTirada2) tornTirada2 [cartaTirada1] trumfu)
   putStrLn (show cartaTirada2)
   putStrLn ("El jugador "++show(tornTirada2+1)++" ha tirat la següent carta: "++show(cartaTirada2))
   putStrLn ("Actualment sobre la taula hi han les següents cartes: "++show([cartaTirada1,cartaTirada2]))
   putStrLn " "
+
   --TORN 3
   let tornTirada3 = mod (tornTirada2 + 1) 4
   putStrLn ("--- TORN DEL JUGADOR "++show(tornTirada3+1)++" ---")
-  -- putStrLn ("Debugg: "++show(llistaJugadors !! tornTirada3))
   let cartaTirada3 = unsafePerformIO(realitzarTirada (llistaJugadors !! tornTirada3) tornTirada3 [cartaTirada1,cartaTirada2] trumfu)
   putStrLn (show cartaTirada3)
   putStrLn ("El jugador "++show(tornTirada3+1)++" ha tirat la següent carta: "++show(cartaTirada3))
   putStrLn ("Actualment sobre la taula hi han les següents cartes: "++show([cartaTirada1,cartaTirada2,cartaTirada3]))
   putStrLn " "
-  --TORN TIRADA 4
+
+  --TORN 4
   let tornTirada4 = mod (tornTirada3 + 1) 4
   putStrLn ("--- TORN DEL JUGADOR "++show(tornTirada4+1)++" ---")
-  -- putStrLn ("Debugg: "++show(llistaJugadors !! tornTirada4))
   let cartaTirada4 = unsafePerformIO(realitzarTirada (llistaJugadors !! tornTirada4) tornTirada4 [cartaTirada1,cartaTirada2,cartaTirada3] trumfu)
   putStrLn (show cartaTirada4)
   putStrLn ("El jugador "++show(tornTirada4+1)++" ha tirat la següent carta: "++show(cartaTirada4))
   putStrLn ("Actualment sobre la taula hi han les següents cartes: "++show([cartaTirada1,cartaTirada2,cartaTirada3,cartaTirada4]))
   putStrLn " "
-  --COMPROBAR GUANYADOR
+
+  --ESTAT DE LA PARTIDA AL FINAL DE LA RONDA
   putStrLn "-----------------------------"
   putStrLn "----- RESUM FI DE RONDA -----"
   putStrLn "-----------------------------"
   let basa = (NewB (tornTirada1,cartaTirada1,cartaTirada2,cartaTirada3,cartaTirada4))
   let guanyador = jugadorGuanyaBasa basa trumfu
   putStrLn ("El jugador que ha guanyat la basa actual ha estat el Jugador "++show(guanyador+1))
-  --COMPROBAR LA PUNTUACIO QUE HI HA SOBRE LA TAULA
+
+  --COMPROBAR LA PUNTUACIO QUE HI HA EN LA BASA
   let puntsGuanyats = (((punts (cartesBasa basa))+1))
   if (guanyador == 0) || (guanyador == 2) then do
     putStrLn ("La parella formada per el Jugador 1 i el Jugador 3 ha guanyat "++show(puntsGuanyats)++" punts en aquesta basa!")
   else do
     putStrLn ("La parella formada per el Jugador 2 i el Jugador 4 ha guanyat "++show(puntsGuanyats)++" punts en aquesta basa!")
-  --SUMAR PUNTS
+
+  --CALCULAR LA PUNTUACIO QUE TENEN LES PARELLES AMB LA MA ACTUAL
   let newPuntuacio = (puntsTuples puntsGuanyats guanyador oldPuntuacio)
-  --TREURE LES CARTES TIRADES DE LES MANS
+
+  --TREURE LES CARTES TIRADES DE LES MANS DELS JUGADORS I CREACIO DE LES NOVES MANS
   let cartesTirades = [cartaTirada1,cartaTirada2,cartaTirada3,cartaTirada4]
-  -- putStrLn " "
-  -- putStrLn ("Debugg llista mans: "++show(llistaJugadors))
-  -- putStrLn ("Debugg cartes tirades: "++show(cartesTirades))
-  -- putStrLn ("Debugg jugador: "++show(tornTirada1))
-  -- putStrLn " "
   let novesMans = eliminarCartesTiradesDeLesMans llistaJugadors cartesTirades tornTirada1
   let newMa1 = (novesMans !! 0)
   let newMa2 = (novesMans !! 1)
   let newMa3 = (novesMans !! 2)
   let newMa4 = (novesMans !! 3)
-  -- putStrLn " "
-  -- putStrLn ("Debugg newma1: "++show(newMa1))
-  -- putStrLn ("Debugg newma2: "++show(newMa2))
-  -- putStrLn ("Debugg newma3: "++show(newMa3))
-  -- putStrLn ("Debugg newma4: "++show(newMa4))
-  -- putStrLn ("Debugg length newma 1: "++show(length(getCartesMa newMa1)))
-  -- putStrLn ("Debugg length newma 2: "++show(length(getCartesMa newMa2)))
-  -- putStrLn ("Debugg length newma 3: "++show(length(getCartesMa newMa3)))
-  -- putStrLn ("Debugg length newma 4: "++show(length(getCartesMa newMa4)))
-  -- putStrLn " "
+
+  --MOSTRAR LES PUNTUACIONS QUE ES TENEN AMB LA MA ACTUAL
   putStrLn "Les puntuacions actuals son: "
   putStrLn ("Parella 1 (J1 i J3): "++show(fst newPuntuacio))
   putStrLn ("Parella 2 (J2 i J4): "++show(snd newPuntuacio))
-  putStrLn "Pitja Intro per continuar amb la seguent ronda..."
+  putStrLn "Prem INTRO per continuar amb la seguent ronda..."
   dummy <- getLine
-  -- if ((fst newPuntuacio) >= 101) then do --COMPROBAR SI ALGU HA ARRIBAT ALS 101 PUNTS SI ES QUE SI ACABAR PARTIDA
-  --   putStrLn "Parella J1 i J3 han guanyat"
-  --   return True
-  -- else if ((snd newPuntuacio) >= 101) then do
-  --   putStrLn "Parella J2 i J4 han guanyat"
-  --   return True
+
+  --FINALITZACIO DE LA RONDA DE TIRADES
   if (getCartesMa newMa1) == [] then do --COMPROBAR SI S'HAN TIRAT TOTES LES CARTES SI ES QUE SI ES TORNA A BARREJAR LA BARALLA, REPARTIR LES CARTES I ES TORNA A TRIAR EL TRUMFU
     putStrLn " "
     putStrLn "-----------------------------------"
     putStrLn "------   RECOMPTE DE PUNTS   ------"
     putStrLn "-----------------------------------"
     putStrLn " "
-    putStrLn "S'han jugat totes les cartes procedirem a realitzar el recompte de punts..."
+    putStrLn "S'han jugat totes les cartes, procedirem a realitzar el recompte de punts..."
     putStrLn "En aquesta ma les parelles han aconseguit les següents puntuacions:"
     putStrLn ("Parella 1 (J1 i J3): "++show(fst newPuntuacio))
     putStrLn ("Parella 2 (J2 i J4): "++show(snd newPuntuacio))
     let newEscollidor = mod (oldEscollidor + 1) 4
-    if (fst newPuntuacio) > (snd newPuntuacio) then do --GUANYA PARELLA 1
+    if (fst newPuntuacio) > (snd newPuntuacio) then do --PARELLA 1 GUANYA LA MA ACTUAL
       let tmp = ((div ((fst newPuntuacio)-(snd newPuntuacio)) 2)*multiplicador) + (fst puntuacioAcomulada)
-      if tmp >= 101 then do--Parella 1 win
+      if tmp >= 101 then do--PARELLA 1 GUANYA LA PARTIDA
         putStrLn ("Un cop fet el recomte i repartits els punts, ja tenim una parella guanyadora!!!")
         putStrLn ("Amb una puntuacio de "++show(tmp)++" la parella 1 (J1 i J3) han guanyat la partida!!!")
         putStrLn ("La parella 2 (J2 i J4) ha perdut amb una puntuació de "++show(snd puntuacioAcomulada))
         putStrLn "Fi de l'execucio"
-      else do
+      else do--TORNEM A REPARTIR LES CARTES
         putStrLn " "
-        putStrLn "Les puntuacions actuals de les dues parelles son: "
+        putStrLn "Les puntuacions actuals de les dues parelles son:"
         putStrLn ("Parella 1 (J1 i J3): "++show(tmp))
         putStrLn ("Parella 2 (J2 i J4): "++show(snd puntuacioAcomulada))
         putStrLn " "
         putStrLn "Com que cap de les dues parelles ha arribat als 101 punts,"
         putStrLn "procedim a repartir novament les cartes i a escollir un nou Trumfu!"
-        putStrLn "Pitja Intro per continuar..."
+        putStrLn "Prem INTRO per continuar..."
         dummy <- getLine
         tornarRepartirCartes newEscollidor (tmp,(snd puntuacioAcomulada))
-    else if (fst newPuntuacio) < (snd newPuntuacio) then do --GUANYA PARELLA 2
+    else if (fst newPuntuacio) < (snd newPuntuacio) then do --PARELLA 2 GUANYA LA MA ACTUAL
       let tmp = ((div ((snd newPuntuacio)-(fst newPuntuacio)) 2)*multiplicador) + (snd puntuacioAcomulada)
-      if tmp >= 101 then do--Parella 2 win
+      if tmp >= 101 then do--PARELLA 2 GUANYA LA PARTIDA
         putStrLn ("Un cop fet el recomte i repartits els punts, ja tenim una parella guanyadora!!!")
         putStrLn ("Amb una puntuacio de "++show(tmp)++" la parella 1 (J1 i J3) han guanyat la partida!!!")
         putStrLn ("La parella 2 (J2 i J4) ha perdut amb una puntuació de "++show(snd puntuacioAcomulada))
         putStrLn "Fi de l'execucio"
-      else do
+      else do--TORNEM A REPARTIR LES CARTES
         putStrLn " "
-        putStrLn "Les puntuacions actuals de les dues parelles son: "
+        putStrLn "Les puntuacions actuals de les dues parelles son:"
         putStrLn ("Parella 1 (J1 i J3): "++show(fst puntuacioAcomulada))
         putStrLn ("Parella 2 (J2 i J4): "++show(tmp))
         putStrLn " "
         putStrLn "Com que cap de les dues parelles ha arribat als 101 punts,"
         putStrLn "procedim a repartir novament les cartes i a escollir un nou Trumfu!"
-        putStrLn "Pitja Intro per continuar..."
+        putStrLn "Prem INTRO per continuar..."
         dummy <- getLine
         tornarRepartirCartes newEscollidor ((fst puntuacioAcomulada), tmp)
-    else do --EMPAT
+    else do --EMPAT EN LA MA ACTUAL
       putStrLn " "
-      putStrLn "Les puntuacions actuals de les dues parelles son: "
+      putStrLn "Les puntuacions actuals de les dues parelles son:"
       putStrLn ("Parella 1 (J1 i J3): "++show(fst puntuacioAcomulada))
       putStrLn ("Parella 2 (J2 i J4): "++show(snd puntuacioAcomulada))
       putStrLn " "
       putStrLn "Com que cap de les dues parelles ha arribat als 101 punts,"
       putStrLn "procedim a repartir novament les cartes i a escollir un nou Trumfu!"
-      putStrLn "Pitja Intro per continuar..."
+      putStrLn "Prem INTRO per continuar..."
       dummy <- getLine
       tornarRepartirCartes newEscollidor puntuacioAcomulada
-  else do --SEGUIM JUGANT
+  else do --ELS JUGADORS ENCARA TENEN CARTES A LA MA, SEGUIM JUGANT
     mainLoop trumfu newMa1 newMa2 newMa3 newMa4 oldEscollidor guanyador newPuntuacio puntuacioAcomulada multiplicador
 
+
+{--- tornarRepartirCartes: S'encarrega de tornar a repartir les cartes---
+  En aquest bloc es gestionen la generacio d'una nova baralla aixi com repartirla
+  als jugadors de la partida. Tambe gestiona ser el proxim a tirar.
+-}
 tornarRepartirCartes newEscollidor puntuacioAcomulada = do
   putStrLn " "
   putStrLn "----------------------------------"
@@ -582,42 +584,50 @@ tornarRepartirCartes newEscollidor puntuacioAcomulada = do
   putStrLn "Escull un dels seguents Trumfus:"
   escollirTrumfu ma1 ma2 ma3 ma4 newEscollidor (mod (newEscollidor + 1) 4) (0,0) puntuacioAcomulada
 
+{--- realitzarTirada: S'encarrega de gestionar la tirada---
+  En aquest bloc es gestionen l'E/S de l'usuari a l'hora de realitzar la tirada
+  i gestiona tambe les tirades de la maquina.
+-}
 realitzarTirada ma jugador cartesJugades trumfu = do
-  if jugador == 0 then do --Tirada manual
+  if jugador == 0 then do --TIRADA DE L'USUARI
     putStrLn "Actualment tens les següents cartes a la ma: "
     print(ma)
     putStrLn "D'aquestes només es legal tirar les següents: "
     print(realJugadesPossibles ma trumfu cartesJugades)
     putStrLn "Quina carta jugaras? (Tinguen en compte que la primera carta de la llista es la 0)"
-    return (unsafePerformIO(escollirCarta (realJugadesPossibles ma trumfu cartesJugades))) --retornara la carta escollida per el jugador
-  else do --Tirada IA
-    return (escollirCartaIA ma cartesJugades trumfu) --retornara la carta escollida per la IA
+    return (unsafePerformIO(escollirCarta (realJugadesPossibles ma trumfu cartesJugades)))
+  else do --TIRADA DE LA IA
+    return (escollirCartaIA ma cartesJugades trumfu)
 
+{--- escollirCarta: S'encarrega de gestionar l'eleccio de la carta---
+  En aquest bloc es gestionen l'E/S de l'usuari a l'hora de realitzar l'eleccio
+  de la carta a tirar
+-}
 escollirCarta cartes = do
   input <- getLine
   if (length input) > 2 then do
     putStrLn "ERROR: Index no valid. Torna a escollir."
     escollirCarta cartes
   else if (length input) == 2 then do
-    if (isDigit(input !! 0)) && (isDigit(input !! 1)) then do --es un index valid
+    if (isDigit(input !! 0)) && (isDigit(input !! 1)) then do
       let index = (read input::Int)
-      if (index + 1) > length(cartes) then do --Hem escollit un index no valid
+      if (index + 1) > length(cartes) then do
         putStrLn "ERROR: Index no valid. Torna a escollir."
         escollirCarta cartes
       else do
         return (cartes!!index)
-    else do --no es valid ERROR
+    else do
       putStrLn "ERROR: Index no valid. Torna a escollir."
       escollirCarta cartes
   else do
-    if (isDigit(input !! 0)) then do--es un index valid
+    if (isDigit(input !! 0)) then do
       let index = (read input::Int)
-      if (index + 1) > length(cartes) then do --Hem escollit un index no valid
+      if (index + 1) > length(cartes) then do
         putStrLn "ERROR: Index no valid. Torna a escollir."
         escollirCarta cartes
       else do
         return (cartes!!index)
-    else do-- no es valid ERROR
+    else do
     putStrLn "ERROR: Index no valid. Torna a escollir."
     escollirCarta cartes
 
