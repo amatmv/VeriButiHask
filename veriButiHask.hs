@@ -876,9 +876,9 @@ eliminarCartesTiradesDeLesMans ml b j
     _carta2 = b !! 1
     _carta3 = b !! 2
     _carta4 = b !! 3
+
 -- Donat les mans dels jugadors, el trunfu de la partida, les cartes de la base, el jugador i el numero de base
 -- retorna (base, jugador i nbase) si hi ha hagut trampas.
-
 baseEsTrampa :: [Ma] -> Trumfu -> [Carta] -> Int -> Int -> ([Ma], ([Carta],Int, Int))
 baseEsTrampa ml t b j nbase
   | (j == 0) = if (filter (==_carta2) (realJugadesPossibles _maJugador2 t _primer_ha_tirat)) == [] then ([], (b, nbase, 1))
@@ -914,5 +914,12 @@ baseEsTrampa ml t b j nbase
 
 -- Donada les mans dels jugadors, el trumfu de la partida, les cartes jugades a la partida i el jugador que ha començat
 -- retorna una tupla amb la base, numero de base i jugador que ha fet trampa
-
---trampa :: [Ma] -> Trumfu -> [Carta] -> Int -> Maybe ([Carta],Int, Int)
+trampa :: [Ma] -> Trumfu -> [Carta] -> Int -> Maybe ([Carta],Int, Int)
+trampa ml t c j
+  | getCartesMa (head ml) == [] = Nothing
+  | (fst _itsaTrap == []) = Just (snd _itsaTrap) -- trampa
+  | otherwise = trampa (fst _itsaTrap) t (drop 4 c) (jugadorGuanyaBasa (NewB (j,(_baseActual !! 0),(_baseActual !! 1),(_baseActual !! 2), _baseActual !! 3)) t) -- correcte
+  where
+    _baseActual = take 4 c
+    _nbase = 13 - length (getCartesMa (head ml))
+    _itsaTrap = baseEsTrampa ml t _baseActual j _nbase
