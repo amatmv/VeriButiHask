@@ -48,8 +48,7 @@ data Multiplicador = Contro | Recontro | SantVicens | Barraca
   Cada Pal té 12 numeros, que van des del 1 fins al 12.
   És mostrable, comparable i ordenable.
 -}
-data TipusCarta = As | Dos | Tres | Quatre | Cinc | Sis | Set | Vuit | Manilla |
-                  Sota | Cavall | Rei
+data TipusCarta = As | Dos | Tres | Quatre | Cinc | Sis | Set | Vuit | Manilla | Sota | Cavall | Rei
                   deriving (Show, Eq)
 instance Ord TipusCarta where
   compare tipuscarta1 tipuscarta2
@@ -351,15 +350,34 @@ hiVas = do
     hiVas
 
 mainLoop trumfu ma1 ma2 ma3 ma4 oldEscollidor oldPuntuacio multiplicador = do
-  putStrLn " "
-  putStrLn "------------------------------------"
-  putStrLn "------   COMENÇA LA PARTIDA   ------"
-  putStrLn "------------------------------------"
-  putStrLn " "
+  if ((fst oldPuntuacio) == 0) && ((snd oldPuntuacio) == 0) then do --acaba de comneçar la partida i fem el promp
+    putStrLn " "
+    putStrLn "------------------------------------"
+    putStrLn "------   COMENÇA LA PARTIDA   ------"
+    putStrLn "------------------------------------"
+    putStrLn " "
+  else if (length(getCartesMa ma1)) == 12 then do
+    putStrLn " "
+    putStrLn "--------------------------------------------------------"
+    putStrLn "------   CONTINUEM LA PARTIDA AMB LES NOVES MANS  ------"
+    putStrLn "--------------------------------------------------------"
+    putStrLn " "
+  else do
+    putStrLn " "
+    putStrLn "-----------------------------------------------"
+    putStrLn "-----------------  NOVA RONDA -----------------"
+    putStrLn "-----------------------------------------------"
+    putStrLn " "
+
+  putStrLn ("Debugg length ma 1: "++show(length(getCartesMa ma1)))
+  putStrLn ("Debugg length ma 2: "++show(length(getCartesMa ma2)))
+  putStrLn ("Debugg length ma 3: "++show(length(getCartesMa ma3)))
+  putStrLn ("Debugg length ma 4: "++show(length(getCartesMa ma4)))  
   --TORN 1
   let tornTirada1 = mod (oldEscollidor + 1) 4
   let llistaJugadors = [ma1,ma2,ma3,ma4]
   putStrLn ("--- TORN DEL JUGADOR "++show(tornTirada1+1)++" ---")
+  putStrLn ("Debugg: "++show(llistaJugadors !! tornTirada1))
   let cartaTirada1 = unsafePerformIO(realitzarTirada (llistaJugadors !! tornTirada1) tornTirada1 [] trumfu)
   putStrLn (show cartaTirada1)
   putStrLn ("El jugador "++show(tornTirada1+1)++" ha tirat la següent carta: "++show(cartaTirada1))
@@ -368,6 +386,7 @@ mainLoop trumfu ma1 ma2 ma3 ma4 oldEscollidor oldPuntuacio multiplicador = do
   --TORN 2
   let tornTirada2 = mod (tornTirada1 + 1) 4
   putStrLn ("--- TORN DEL JUGADOR "++show(tornTirada2+1)++" ---")
+  putStrLn ("Debugg: "++show(llistaJugadors !! tornTirada2))
   let cartaTirada2 = unsafePerformIO(realitzarTirada (llistaJugadors !! tornTirada2) tornTirada2 [cartaTirada1] trumfu)
   putStrLn (show cartaTirada2)
   putStrLn ("El jugador "++show(tornTirada2+1)++" ha tirat la següent carta: "++show(cartaTirada2))
@@ -376,6 +395,7 @@ mainLoop trumfu ma1 ma2 ma3 ma4 oldEscollidor oldPuntuacio multiplicador = do
   --TORN 3
   let tornTirada3 = mod (tornTirada2 + 1) 4
   putStrLn ("--- TORN DEL JUGADOR "++show(tornTirada3+1)++" ---")
+  putStrLn ("Debugg: "++show(llistaJugadors !! tornTirada3))
   let cartaTirada3 = unsafePerformIO(realitzarTirada (llistaJugadors !! tornTirada3) tornTirada3 [cartaTirada1,cartaTirada2] trumfu)
   putStrLn (show cartaTirada3)
   putStrLn ("El jugador "++show(tornTirada3+1)++" ha tirat la següent carta: "++show(cartaTirada3))
@@ -384,13 +404,14 @@ mainLoop trumfu ma1 ma2 ma3 ma4 oldEscollidor oldPuntuacio multiplicador = do
   --TORN TIRADA 4
   let tornTirada4 = mod (tornTirada3 + 1) 4
   putStrLn ("--- TORN DEL JUGADOR "++show(tornTirada4+1)++" ---")
+  putStrLn ("Debugg: "++show(llistaJugadors !! tornTirada4))
   let cartaTirada4 = unsafePerformIO(realitzarTirada (llistaJugadors !! tornTirada4) tornTirada4 [cartaTirada1,cartaTirada2,cartaTirada3] trumfu)
   putStrLn (show cartaTirada4)
   putStrLn ("El jugador "++show(tornTirada4+1)++" ha tirat la següent carta: "++show(cartaTirada4))
   putStrLn ("Actualment sobre la taula hi han les següents cartes: "++show([cartaTirada1,cartaTirada2,cartaTirada3,cartaTirada4]))
   putStrLn " "
   --COMPROBAR GUANYADOR
-  putStrLn "Precedirem a evaluar el guanyador:"
+  putStrLn "--- RESUM FI DE RONDA ---"
   let basa = (NewB (tornTirada1,cartaTirada1,cartaTirada2,cartaTirada3,cartaTirada4))
   let guanyador = jugadorGuanyaBasa basa trumfu
   putStrLn ("El jugador que ha guanyat la basa actual ha estat el Jugador "++show(guanyador+1))
@@ -409,6 +430,11 @@ mainLoop trumfu ma1 ma2 ma3 ma4 oldEscollidor oldPuntuacio multiplicador = do
   let newMa2 = (novesMans !! 1)
   let newMa3 = (novesMans !! 2)
   let newMa4 = (novesMans !! 3)
+  putStrLn "Les puntuacions actuals son: "
+  putStrLn ("Parella 1 (J1 i J3): "++show(fst newPuntuacio))
+  putStrLn ("Parella 2 (J2 i J4): "++show(snd newPuntuacio))
+  putStrLn "Pitja Intro per continuar amb la seguent ronda..."
+  dummy <- getLine
   if ((fst newPuntuacio) >= 101) then do --COMPROBAR SI ALGU HA ARRIBAT ALS 101 PUNTS SI ES QUE SI ACABAR PARTIDA
     putStrLn "Parella J1 i J3 han guanyat"
     return True
@@ -421,7 +447,7 @@ mainLoop trumfu ma1 ma2 ma3 ma4 oldEscollidor oldPuntuacio multiplicador = do
     putStrLn "WIP: Tornar a repartir"
     return True
   else do --SI NO HA PASSAT CAP DE LES ANTERIORS ES SEGUEIXEN REALITZANT TIRADES I ACOMULANT PUNTS
-    mainLoop trumfu newMa1 newMa2 newMa3 newMa4 tornTirada1 newPuntuacio multiplicador
+    mainLoop trumfu newMa1 newMa2 newMa3 newMa4 guanyador newPuntuacio multiplicador
     return True
 
 realitzarTirada ma jugador cartesJugades trumfu = do
