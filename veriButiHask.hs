@@ -657,9 +657,63 @@ realJugadesPossibles (NewM llista) t (x:xs)
   | (length xs + 1 == 3) && (quiEstaGuanyant 3 (x:xs) t == 3) = if cartesPalMa (NewM llista) (getPal x) == [] then filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes [c | c<-llista] (last xs) t else filtrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal (cartesPalMa (NewM llista) (getPal x)) (last xs)
   | otherwise = if cartesPalMa (NewM llista) (getPal x) == [] then [c | c<-llista] else cartesPalMa (NewM llista) (getPal x)
 
+
+getCartesMa :: Ma -> [Carta]
+getCartesMa (NewM m) = m
+
+-- Donades les mans dels jugadors ordenades 0-3, les cartes que s'han tirat, el jugador que ha començat retorna les mans sense les cartes tirades
+eliminarCartesTiradesDeLesMans :: [Ma] -> [Carta] -> Integer -> [Ma]
+eliminarCartesTiradesDeLesMans ml b j
+  | (j == 0) = [NewM(filter (/=_carta1) _maJugador1), NewM(filter (/=_carta2) _maJugador2), NewM(filter (/=_carta3) _maJugador3), NewM(filter (/=_carta4) _maJugador4)]
+  | (j == 1) = [NewM(filter (/=_carta4) _maJugador1), NewM(filter (/=_carta1) _maJugador2), NewM(filter (/=_carta2) _maJugador3), NewM(filter (/=_carta3) _maJugador4)]
+  | (j == 2) = [NewM(filter (/=_carta3) _maJugador1), NewM(filter (/=_carta4) _maJugador2), NewM(filter (/=_carta1) _maJugador3), NewM(filter (/=_carta2) _maJugador4)]
+  | (j == 3) = [NewM(filter (/=_carta2) _maJugador1), NewM(filter (/=_carta3) _maJugador2), NewM(filter (/=_carta4) _maJugador3), NewM(filter (/=_carta1) _maJugador4)]
+  where
+    _maJugador1 = getCartesMa (ml !! 0)
+    _maJugador2 = getCartesMa (ml !! 1)
+    _maJugador3 = getCartesMa (ml !! 2)
+    _maJugador4 = getCartesMa (ml !! 3)
+    _carta1 = b !! 0
+    _carta2 = b !! 1
+    _carta3 = b !! 2
+    _carta4 = b !! 3
+-- Donat les mans dels jugadors, el trunfu de la partida, les cartes de la base, el jugador i el numero de base 
+-- retorna (base, jugador i nbase) si hi ha hagut trampas.
+
+baseEsTrampa :: [Ma] -> Trumfu -> [Carta] -> Integer -> Integer -> ([Ma], ([Carta],Integer, Integer))
+baseEsTrampa ml t b j nbase
+  | (j == 0) = if (filter (==_carta2) (realJugadesPossibles _maJugador2 t _primer_ha_tirat)) == [] then ([], (b, nbase, 1))
+               else if (filter (==_carta3) (realJugadesPossibles _maJugador3 t _segon_ha_tirat)) == [] then ([], (b, nbase, 2))
+               else if (filter (==_carta4) (realJugadesPossibles _maJugador4 t _tercer_ha_tirat)) == [] then ([], (b, nbase, 3))
+               else ([], (b, nbase, 2)) --todo remove cards from mans an return correct formats
+  | (j == 1) = if (filter (==_carta2) (realJugadesPossibles _maJugador3 t _primer_ha_tirat)) == [] then ([], (b, nbase, 2))
+               else if (filter (==_carta3) (realJugadesPossibles _maJugador4 t _segon_ha_tirat)) == [] then ([], (b, nbase, 3))
+               else if (filter (==_carta4) (realJugadesPossibles _maJugador1 t _tercer_ha_tirat)) == [] then ([], (b, nbase, 0))
+               else ([], (b, nbase, 2))
+  | (j == 2) = if (filter (==_carta2) (realJugadesPossibles _maJugador4 t _primer_ha_tirat)) == [] then ([], (b, nbase, 3))
+               else if (filter (==_carta3) (realJugadesPossibles _maJugador1 t _segon_ha_tirat)) == [] then ([], (b, nbase, 0))
+               else if (filter (==_carta4) (realJugadesPossibles _maJugador2 t _tercer_ha_tirat)) == [] then ([], (b, nbase, 1))
+               else ([], (b, nbase, 2))
+  | (j == 3) = if (filter (==_carta2) (realJugadesPossibles _maJugador1 t _primer_ha_tirat)) == [] then ([], (b, nbase, 0))
+               else if (filter (==_carta3) (realJugadesPossibles _maJugador2 t _segon_ha_tirat)) == [] then ([], (b, nbase, 1))
+               else if (filter (==_carta4) (realJugadesPossibles _maJugador3 t _tercer_ha_tirat)) == [] then ([], (b, nbase, 2))
+               else ([], (b, nbase, 2))
+  where
+    _maJugador1 = ml !! 0
+    _maJugador2 = ml !! 1
+    _maJugador3 = ml !! 2
+    _maJugador4 = ml !! 3
+    _no_ha_tirat_ningu = []
+    _primer_ha_tirat = take 1 b
+    _segon_ha_tirat = take 2 b
+    _tercer_ha_tirat = take 3 b
+    _carta1 = b !! 0
+    _carta2 = b !! 1
+    _carta3 = b !! 2
+    _carta4 = b !! 3
+
 -- Donada les mans dels jugadors, el trumfu de la partida, les cartes jugades a la partida i el jugador que ha començat
 -- retorna una tupla amb la base, numero de base i jugador que ha fet trampa
 
---baseEsTrampa ::
+--trampa :: [Ma] -> Trumfu -> [Carta] -> Integer -> Maybe ([Carta],Int, Int)
 
---trampa :: [Ma] -> Trumfu -> [Carta] -> Int -> Maybe ([Carta],Int, Int)
