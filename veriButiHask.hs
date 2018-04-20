@@ -640,9 +640,9 @@ escollirCarta cartes = do
 --- Funcions Auxiliars ---
 --------------------------
 
-{--- puntsTuples: Retorna una tuple amb les puntuacions de les dues parelles ---
-  Donat uns punta guanyats, el jugador guanyador i la puntuacio que ja tenien
-  retorna una tupla amb les puntuacions actualitzades.
+{- puntsTuples
+  Input: Els punts guanyats, el jugador que ha guanyat, i la puntuació que tenen les parelles actualment.
+  Output: La puntuació de les parelles actualitzades d'acord amb l'entrada.
 -}
 puntsTuples :: Int -> Int -> (Int,Int) -> (Int,Int)
 puntsTuples pguanyats 0 p = ((fst(p)+pguanyats),(snd(p)))
@@ -651,8 +651,10 @@ puntsTuples pguanyats 1 p = ((fst(p)),((snd(p))+pguanyats))
 puntsTuples pguanyats 3 p = ((fst(p)),((snd(p))+pguanyats))
 
 
-{--- teManillaOAsDeTrunfus: Retorna una boolea si a la ma hi ha una manilla o
-   o un as del pal del trumfu
+
+{- teManillaOAsDeTrunfus
+  Input: Un Trumfu i una Ma.
+  Output: Un boolea que sera cert si la ma conte un as o una manilla del trumfu especificat.
 -}
 teManillaOAsDeTrunfus :: Trumfu -> Ma -> Bool
 teManillaOAsDeTrunfus t (NewM l)
@@ -689,16 +691,32 @@ iaEscullTrumfu llista
     nBastos = length (cartesPalMa llista Bastos)
     nEspases = length (cartesPalMa llista Copes)
     nCopes = length (cartesPalMa llista Espases)
---
 
+
+{- escollirCartaIA
+  Input: Un Ma, una llista de Cartes i un Trumfu.
+  Output: Retorna la carta escollida per la IA, que és la primera carta de la
+  llista de jugades possibles.
+-}
 escollirCartaIA :: Ma -> [Carta] -> Trumfu -> Carta
 escollirCartaIA ma cartes trumfu = (realJugadesPossibles ma trumfu cartes) !! 0
 
+
+{- getCartesMa
+  Input: Una Ma.
+  Output: Llista de cartes que hi havia a la ma.
+-}
 getCartesMa :: Ma -> [Carta]
 getCartesMa (NewM x) = x
 
+
+{- crearMans
+  Input: Una llista de llistes de Cartes.
+  Output: una llista de mans amb les cartes proporcionades en l'entrada.
+-}
 crearMans :: [[Carta]] -> [Ma]
 crearMans llista = [(NewM (llista !! 0)),(NewM (llista !! 1)),(NewM (llista !! 2)),(NewM (llista !! 3))]
+
 
 {- repartirCartes
   Input: Una llista de Cartes
@@ -707,9 +725,10 @@ crearMans llista = [(NewM (llista !! 0)),(NewM (llista !! 1)),(NewM (llista !! 2
 repartirCartes :: [Carta] -> [[Carta]]
 repartirCartes (w:x:y:z:xs) = repartirCartes' [[w],[x],[y],[z]] xs
 
+
 {- repartirCartes'
-  Input: #TODO Adrià
-  Output: #TODO Adrià
+  Input: Una llista de llista de cartes i una llista de cartes
+  Output: Retorna una llista de llistes de cartes, que son les cartes repartides per els jugadors.
 -}
 repartirCartes' :: [[Carta]] -> [Carta] -> [[Carta]]
 repartirCartes' llista [] = llista
@@ -727,6 +746,7 @@ shuffle (carta:cs) llavor = (cartes !! rand) : shuffle deleteRandomCard llavor
         cartes = (carta:cs)
         rand = mod (unsafePerformIO (getStdRandom (randomR (0, (length cartes)-1))) * llavor) (length cartes)
         deleteRandomCard = (fst $ splitAt rand cartes) ++ (tail $ snd $ splitAt rand cartes)
+
 
 {- getCardValue
   Input: Un TipusCarta
@@ -747,6 +767,7 @@ getCardValue tipus = case tipus of
       Tres -> 2
       Dos -> 1
 
+
 {- getCardPunctuation
   Input: El TipusCarta
   Output: El valor numèric corresponent a la puntuació d'aquest TipusCarta
@@ -760,6 +781,7 @@ getCardPunctuation tipus = case tipus of
       Manilla -> 5
       otherwise -> 0
 
+
 {- punts
   Input: Conjunt de cartes
   Output: Puntuació del conjunt de cartes
@@ -767,6 +789,7 @@ getCardPunctuation tipus = case tipus of
 punts :: [Carta] -> Int
 punts [] = 0
 punts ((NewC (pal, tipus)):cv) = (getCardPunctuation tipus) + (punts cv)
+
 
 {- cartesGuanyades
   Input: Donat un trumfu, un conjunt de cartes i el numero de tirador inicial.
@@ -785,7 +808,8 @@ cartesGuanyades trumfu (carta:xs) tirador
     _baseActual = (NewB (tirador, carta, xs !! 0, xs !! 1, xs !! 2))
     _cartes_guanyades = cartesBasa (NewB (_guanyador, carta, xs !! 0, xs !! 1, xs !! 2))
 
-{-
+
+{- puntsParelles
   Input: Les mans dels jugadors, un trumfu, les cartes tirades en tota la
          partida, i el nombre del primer jugador en tirar.
   Output: Retorna una tupla amb la puntuació dels dos equips si no hi ha hagut
@@ -796,12 +820,14 @@ puntsParelles mans t cartes jugador = Just (punts $ fst _cartes_guanyades, punts
   where
     _cartes_guanyades = cartesGuanyades t cartes jugador
 
+
 {- getPal
   Input: Una Carta.
   Output: Pal de la Carta.
 -}
 getPal :: Carta -> Pal
 getPal (NewC (pal, tipus)) = pal
+
 
 {- getTipus
   Input: Una Carta.
@@ -810,12 +836,14 @@ getPal (NewC (pal, tipus)) = pal
 getTipus :: Carta -> TipusCarta
 getTipus (NewC (pal, tipus)) = tipus
 
+
 {- cartesPalBasa
   Input: Donada una Basa i el Pal
   Output: Les cartes d'aquest Pal en la Basa
 -}
 cartesPalBasa :: Basa -> Pal -> [Carta]
 cartesPalBasa (NewB (j,w,x,y,z)) pal = [x | x<-[w,x,y,z], (pal == (getPal x))]
+
 
 {- cartesPalMa
    Input: Una Ma i un Pal
@@ -824,12 +852,14 @@ cartesPalBasa (NewB (j,w,x,y,z)) pal = [x | x<-[w,x,y,z], (pal == (getPal x))]
 cartesPalMa :: Ma -> Pal -> [Carta]
 cartesPalMa (NewM llista) pal= [x | x<-llista, (pal == (getPal x))]
 
+
 {- cartesPal
   Input: Un conjunt de Cartes i un Pal
   Output: Conjunt de Cartes que són del Pal especificat
 -}
 cartesPal :: [Carta] -> Pal -> [Carta]
 cartesPal llista pal = [x | x<-llista, (pal == (getPal x))]
+
 
 {- basa1
   Input: Una basa
@@ -838,12 +868,14 @@ cartesPal llista pal = [x | x<-llista, (pal == (getPal x))]
 basa1 :: Basa -> Carta
 basa1 (NewB (_,w,_,_,_)) = w
 
+
 {- basa2
   Input: Una basa
   Output: Retorna la segona carta de la basa
 -}
 basa2 :: Basa -> Carta
 basa2 (NewB (_,_,x,_,_)) = x
+
 
 {- basa3
   Input: Una basa
@@ -852,12 +884,14 @@ basa2 (NewB (_,_,x,_,_)) = x
 basa3 :: Basa -> Carta
 basa3 (NewB (_,_,_,y,_)) = y
 
+
 {- basa4
   Input: Una basa
   Output: Retorna la quarta carta de la basa
 -}
 basa4 :: Basa -> Carta
 basa4 (NewB (_,_,_,_,z)) = z
+
 
 {- iniciadorBasa
   Input: Una basa
@@ -866,12 +900,14 @@ basa4 (NewB (_,_,_,_,z)) = z
 iniciadorBasa :: Basa -> Int
 iniciadorBasa (NewB (j,_,_,_,_)) = j
 
+
 {- cartesBasa
   Input: Una basa
   Output: Retorna una llista que conté les cartes de la basa
 -}
 cartesBasa :: Basa -> [Carta]
 cartesBasa (NewB (j,w,x,y,z)) = [w,x,y,z]
+
 
 {- palGuanyadorBasa
   Input:
@@ -881,6 +917,7 @@ palGuanyadorBasa :: Basa -> Trumfu -> Pal
 palGuanyadorBasa b t
   | ((cartesPalBasa b (trumfu2Pal t)) /= []) = (trumfu2Pal t)
   | otherwise = (getPal (basa1 b))
+
 
 {- trumfu2Pal
   Input: Un trumfu
@@ -906,6 +943,7 @@ pal2Trumfu pal = case pal of
   Copes -> Co
   Espases -> Es
 
+
 {- jugadorGuanyaBasa
   Input: La basa i el trumfo
   Output: Retorna el jugador que ha guanyat la basa
@@ -913,13 +951,15 @@ pal2Trumfu pal = case pal of
 jugadorGuanyaBasa :: Basa -> Trumfu -> Int
 jugadorGuanyaBasa b t = tiradorCarta (cartaGuanyadora (basa1 b) (cartesBasa b) (palGuanyadorBasa b t)) b
 
+
 {- cartaGuanyadora
-  Input: #TODO Adria
-  Output: #TODO Adria
+  Input: Una carta, una llista de Cartes i un Pal
+  Output: La carta guanyadora de la llista entrada i la carta.
 -}
 cartaGuanyadora :: Carta -> [Carta] -> Pal -> Carta
 cartaGuanyadora c [] p = c
 cartaGuanyadora c (x:xs) p = if (mata c x p) == c then cartaGuanyadora c xs p else cartaGuanyadora x xs p
+
 
 {- mata
   Input: Dos cartes tirades i el al de la partida
@@ -944,9 +984,6 @@ tiradorCarta c b
   | (c == (basa3 b)) = mod ((iniciadorBasa b)+2) 4
   | (c == (basa4 b)) = mod ((iniciadorBasa b)+3) 4
 
--- #TODO Erase that
---jugadesPossibles:: Ma->Trumfu->Basa->[Carta]
---jugadesPossibles (NewM llista) t b
 
 {- filtrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal
   Input: #TODO Pol
