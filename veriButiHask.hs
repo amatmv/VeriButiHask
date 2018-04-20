@@ -504,7 +504,8 @@ teManillaOAsDeTrunfus t (NewM l)
   | ([x | x<-l, ((trumfu2Pal t == (getPal x)) && ((getTipus x == As) || (getTipus x == As)))] == []) = False
   | otherwise = True
 
--- Aixo ha de dir si la IA hi aniria a l'hora de Contro Recontro SantVicens i Barraca polete
+-- Aixo ha de dir si la IA hi aniria a l'hora de Contro Recontro SantVicens i Barraca
+-- TODO: documentar aquests mètodes: Pol
 esRecontra1 :: Trumfu -> Ma -> Bool
 esRecontra1 trumfu maX = if (length (cartesPalMa maX (trumfu2Pal trumfu)) >=6) || ((length (cartesPalMa maX (trumfu2Pal trumfu)) >=4) && (teManillaOAsDeTrunfus trumfu maX)) then True else False
 esContra2 :: Trumfu -> Ma -> Ma -> Bool
@@ -544,9 +545,17 @@ getCartesMa (NewM x) = x
 crearMans :: [[Carta]] -> [Ma]
 crearMans llista = [(NewM (llista !! 0)),(NewM (llista !! 1)),(NewM (llista !! 2)),(NewM (llista !! 3))]
 
+{- repartirCartes
+  Input: Una llista de Cartes
+  Output: Reparteix la llista inicial en 4 llistes.
+-}
 repartirCartes :: [Carta] -> [[Carta]]
 repartirCartes (w:x:y:z:xs) = repartirCartes' [[w],[x],[y],[z]] xs
 
+{- repartirCartes'
+  Input: #TODO Adrià
+  Output: #TODO Adrià
+-}
 repartirCartes' :: [[Carta]] -> [Carta] -> [[Carta]]
 repartirCartes' llista [] = llista
 repartirCartes' llista (w:x:y:z:xs) = repartirCartes' [((llista !! 0) ++ [w]), ((llista !! 1) ++ [x]), ((llista !! 2) ++ [y]), ((llista !! 3) ++ [z])] xs
@@ -621,7 +630,13 @@ cartesGuanyades trumfu (carta:xs) tirador
     _baseActual = (NewB (tirador, carta, xs !! 0, xs !! 1, xs !! 2))
     _cartes_guanyades = cartesBasa (NewB (_guanyador, carta, xs !! 0, xs !! 1, xs !! 2))
 
-puntsParelles :: [[Carta]] -> Trumfu -> [Carta] -> Int -> Maybe (Int, Int)
+{-
+  Input: Les mans dels jugadors, un trumfu, les cartes tirades en tota la
+         partida, i el nombre del primer jugador en tirar.
+  Output: Retorna una tupla amb la puntuació dels dos equips si no hi ha hagut
+          trampa. Si no, retorna Nothing.
+-}
+puntsParelles :: [Ma] -> Trumfu -> [Carta] -> Int -> Maybe (Int, Int)
 puntsParelles mans t cartes jugador = Just (punts $ fst _cartes_guanyades, punts $ snd _cartes_guanyades)
   where
     _cartes_guanyades = cartesGuanyades t cartes jugador
@@ -712,7 +727,10 @@ palGuanyadorBasa b t
   | ((cartesPalBasa b (trumfu2Pal t)) /= []) = (trumfu2Pal t)
   | otherwise = (getPal (basa1 b))
 
---trumfu2Pal
+{- trumfu2Pal
+  Input: Un trumfu
+  Output: Converteix el tipus trumfu al tipus Pal
+-}
 trumfu2Pal :: Trumfu -> Pal
 trumfu2Pal trumfu = case trumfu of
   Or -> Oros
@@ -721,6 +739,11 @@ trumfu2Pal trumfu = case trumfu of
   Es -> Espases
   Bu -> error "No és un Pal"
 
+
+{- pal2Trumfu
+  Input: Un Pal
+  Output: Converteix el tipus pal al tipus Trumfu
+-}
 pal2Trumfu :: Pal -> Trumfu
 pal2Trumfu pal = case pal of
   Oros  -> Or
@@ -728,13 +751,25 @@ pal2Trumfu pal = case pal of
   Copes -> Co
   Espases -> Es
 
+{- jugadorGuanyaBasa
+  Input: La basa i el trumfo
+  Output: Retorna el jugador que ha guanyat la basa
+-}
 jugadorGuanyaBasa :: Basa -> Trumfu -> Int
 jugadorGuanyaBasa b t = tiradorCarta (cartaGuanyadora (basa1 b) (cartesBasa b) (palGuanyadorBasa b t)) b
 
+{- cartaGuanyadora
+  Input: #TODO Adria
+  Output: #TODO Adria
+-}
 cartaGuanyadora :: Carta -> [Carta] -> Pal -> Carta
 cartaGuanyadora c [] p = c
 cartaGuanyadora c (x:xs) p = if (mata c x p) == c then cartaGuanyadora c xs p else cartaGuanyadora x xs p
 
+{- mata
+  Input: Dos cartes tirades i el al de la partida
+  Output: Retorna la carta que "mata" a l'altre
+-}
 mata :: Carta -> Carta -> Pal -> Carta
 mata c1 c2 p
   | (getPal c1 == p) && (getPal c2 /= p) = c1
@@ -742,6 +777,11 @@ mata c1 c2 p
   | c1 >= c2 = c1
   | c2 > c1 = c2
 
+
+{- tiradorCarta
+  Input: La carta tirada a la Basa actual
+  Output: Retorna el jugador que ha tirat la carta
+-}
 tiradorCarta :: Carta -> Basa -> Int
 tiradorCarta c b
   | (c == (basa1 b)) = (iniciadorBasa b)
@@ -749,19 +789,32 @@ tiradorCarta c b
   | (c == (basa3 b)) = mod ((iniciadorBasa b)+2) 4
   | (c == (basa4 b)) = mod ((iniciadorBasa b)+3) 4
 
+-- #TODO Erase that
 --jugadesPossibles:: Ma->Trumfu->Basa->[Carta]
 --jugadesPossibles (NewM llista) t b
 
+{- filtrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal
+  Input: #TODO Pol
+  Output: #TODO Pol
+-}
 filtrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal :: [Carta] -> Carta -> [Carta]
 filtrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal l c
   | (filter (>c) l == []) = l
   | otherwise = (filter (>c) l)
 
+{- filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes
+  Input: #TODO Pol
+  Output: #TODO Pol
+-}
 filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes :: [Carta] -> Carta -> Trumfu -> [Carta]
 filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes l c t
   | ([x | x<-l, (trumfu2Pal t == (getPal x))] == []) = l
   | otherwise = [x | x<-l, (trumfu2Pal t == (getPal x))]
 
+{- quiEstaGuanyant
+  Input: #TODO Pol
+  Output: #TODO Pol
+-}
 -- Donat un enter (mida llista 2 o 3), una llista de cartes i el trumfu retorna el jugador segons ordre de tirada que esta guanyant
 quiEstaGuanyant :: Int -> [Carta] -> Trumfu -> Int
 quiEstaGuanyant m (x:xs) t
