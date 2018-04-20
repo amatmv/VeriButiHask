@@ -415,7 +415,7 @@ mainLoop trumfu ma1 ma2 ma3 ma4 oldEscollidor oldPuntuacio multiplicador = do
   else if ((snd newPuntuacio) >= 101) then do
     putStrLn "Parella J2 i J4 han guanyat"
     return True
-  else if newMa1 == [] then do --COMPROBAR SI S'HAN TIRAT TOTES LES CARTES SI ES QUE SI ES TORNA A BARREJAR LA BARALLA, REPARTIR LES CARTES I ES TORNA A TRIAR EL TRUMFU
+  else if (getCartesMa newMa1) == [] then do --COMPROBAR SI S'HAN TIRAT TOTES LES CARTES SI ES QUE SI ES TORNA A BARREJAR LA BARALLA, REPARTIR LES CARTES I ES TORNA A TRIAR EL TRUMFU
     putStrLn "S'han jugat totes les cartes pero cap parella ha arribat a 101 punts..."
     putStrLn "Procedim doncs a repartir les cartes novament i a escollir un nou Trumfu!"
     putStrLn "WIP: Tornar a repartir"
@@ -782,7 +782,7 @@ realJugadesPossibles (NewM llista) t (x:xs)
 
 
 -- Donades les mans dels jugadors ordenades 0-3, les cartes que s'han tirat, el jugador que ha començat retorna les mans sense les cartes tirades
-eliminarCartesTiradesDeLesMans :: [Ma] -> [Carta] -> Integer -> [Ma]
+eliminarCartesTiradesDeLesMans :: [Ma] -> [Carta] -> Int -> [Ma]
 eliminarCartesTiradesDeLesMans ml b j
   | (j == 0) = [NewM(filter (/=_carta1) _maJugador1), NewM(filter (/=_carta2) _maJugador2), NewM(filter (/=_carta3) _maJugador3), NewM(filter (/=_carta4) _maJugador4)]
   | (j == 1) = [NewM(filter (/=_carta4) _maJugador1), NewM(filter (/=_carta1) _maJugador2), NewM(filter (/=_carta2) _maJugador3), NewM(filter (/=_carta3) _maJugador4)]
@@ -800,24 +800,24 @@ eliminarCartesTiradesDeLesMans ml b j
 -- Donat les mans dels jugadors, el trunfu de la partida, les cartes de la base, el jugador i el numero de base
 -- retorna (base, jugador i nbase) si hi ha hagut trampas.
 
-baseEsTrampa :: [Ma] -> Trumfu -> [Carta] -> Integer -> Integer -> ([Ma], ([Carta],Integer, Integer))
+baseEsTrampa :: [Ma] -> Trumfu -> [Carta] -> Int -> Int -> ([Ma], ([Carta],Int, Int))
 baseEsTrampa ml t b j nbase
   | (j == 0) = if (filter (==_carta2) (realJugadesPossibles _maJugador2 t _primer_ha_tirat)) == [] then ([], (b, nbase, 1))
                else if (filter (==_carta3) (realJugadesPossibles _maJugador3 t _segon_ha_tirat)) == [] then ([], (b, nbase, 2))
                else if (filter (==_carta4) (realJugadesPossibles _maJugador4 t _tercer_ha_tirat)) == [] then ([], (b, nbase, 3))
-               else ([], (b, nbase, 2)) --todo remove cards from mans an return correct formats
+               else (_updated_mans, (b, nbase, 2))
   | (j == 1) = if (filter (==_carta2) (realJugadesPossibles _maJugador3 t _primer_ha_tirat)) == [] then ([], (b, nbase, 2))
                else if (filter (==_carta3) (realJugadesPossibles _maJugador4 t _segon_ha_tirat)) == [] then ([], (b, nbase, 3))
                else if (filter (==_carta4) (realJugadesPossibles _maJugador1 t _tercer_ha_tirat)) == [] then ([], (b, nbase, 0))
-               else ([], (b, nbase, 2))
+               else (_updated_mans, (b, nbase, 2))
   | (j == 2) = if (filter (==_carta2) (realJugadesPossibles _maJugador4 t _primer_ha_tirat)) == [] then ([], (b, nbase, 3))
                else if (filter (==_carta3) (realJugadesPossibles _maJugador1 t _segon_ha_tirat)) == [] then ([], (b, nbase, 0))
                else if (filter (==_carta4) (realJugadesPossibles _maJugador2 t _tercer_ha_tirat)) == [] then ([], (b, nbase, 1))
-               else ([], (b, nbase, 2))
+               else (_updated_mans, (b, nbase, 2))
   | (j == 3) = if (filter (==_carta2) (realJugadesPossibles _maJugador1 t _primer_ha_tirat)) == [] then ([], (b, nbase, 0))
                else if (filter (==_carta3) (realJugadesPossibles _maJugador2 t _segon_ha_tirat)) == [] then ([], (b, nbase, 1))
                else if (filter (==_carta4) (realJugadesPossibles _maJugador3 t _tercer_ha_tirat)) == [] then ([], (b, nbase, 2))
-               else ([], (b, nbase, 2))
+               else (_updated_mans, (b, nbase, 2))
   where
     _maJugador1 = ml !! 0
     _maJugador2 = ml !! 1
@@ -831,8 +831,9 @@ baseEsTrampa ml t b j nbase
     _carta2 = b !! 1
     _carta3 = b !! 2
     _carta4 = b !! 3
+    _updated_mans = eliminarCartesTiradesDeLesMans ml b j
 
 -- Donada les mans dels jugadors, el trumfu de la partida, les cartes jugades a la partida i el jugador que ha començat
 -- retorna una tupla amb la base, numero de base i jugador que ha fet trampa
 
---trampa :: [Ma] -> Trumfu -> [Carta] -> Integer -> Maybe ([Carta],Int, Int)
+--trampa :: [Ma] -> Trumfu -> [Carta] -> Int -> Maybe ([Carta],Int, Int)
