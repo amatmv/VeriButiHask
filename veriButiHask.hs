@@ -658,7 +658,7 @@ puntsTuples pguanyats 3 p = ((fst(p)),((snd(p))+pguanyats))
 -}
 teManillaOAsDeTrunfus :: Trumfu -> Ma -> Bool
 teManillaOAsDeTrunfus t (NewM l)
-  | Bu _ = False
+  | t == Bu = False
   | ([x | x<-l, ((trumfu2Pal t == (getPal x)) && ((getTipus x == As) || (getTipus x == As)))] == []) = False
   | otherwise = True
 
