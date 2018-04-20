@@ -663,7 +663,7 @@ teManillaOAsDeTrunfus t (NewM l)
   | otherwise = True
 
 
--- TODO: documentar aquests mètodes: Pol
+-- Els seuents metodes retornarant cert si la ia ha de contrar, recontrar... segons nombre de cartes del trumfu i si te manilla o as
 esRecontra1 :: Trumfu -> Ma -> Bool
 esRecontra1 Bu maX = False
 esRecontra1 trumfu maX = if (length (cartesPalMa maX (trumfu2Pal trumfu)) >=6) || ((length (cartesPalMa maX (trumfu2Pal trumfu)) >=4) && (teManillaOAsDeTrunfus trumfu maX)) then True else False
@@ -1012,8 +1012,8 @@ tiradorCarta c b
 
 
 {- filtrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal
-  Input: #TODO Pol
-  Output: #TODO Pol
+  Input: ma del jugador, carta guanyadoram trumfu
+  Output: cartes que pot jugar
 -}
 filtrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal :: [Carta] -> Carta -> Trumfu -> [Carta]
 filtrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal l c t
@@ -1022,8 +1022,8 @@ filtrarGuanyadorasNoFallantSiNoPodemTotesLesDelPal l c t
   | otherwise = (filter (>c) l)
 
 {- filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes
-  Input: #TODO Pol
-  Output: #TODO Pol
+  Input: ma del jugador, carta guanyadoram trumfu
+  Output: cartes que pot jugar
 -}
 filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes :: [Carta] -> Carta -> Trumfu -> [Carta]
 filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes l c t
@@ -1031,8 +1031,8 @@ filtrarGuanyadoresFallantMirantSiTenimTrunfosSinoRetornaTotes l c t
   | otherwise = [x | x<-l, (trumfu2Pal t == (getPal x))]
 
 {- quiEstaGuanyant
-  Input: #TODO Pol
-  Output: #TODO Pol
+  Input: mida de la base, base, trumfu
+  Output: retorna el jugador segons ordre de tirada que esta guanyant +1
 -}
 -- Donat un enter (mida llista 2 o 3), una llista de cartes i el trumfu retorna el jugador segons ordre de tirada que esta guanyant
 quiEstaGuanyant :: Int -> [Carta] -> Trumfu -> Int
