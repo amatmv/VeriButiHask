@@ -9,6 +9,7 @@ import Data.Array.ST
 import Control.Monad
 import Control.Monad.ST
 import Data.STRef
+import Data.Char
 
 --------------------------
 -- Definicions de tipus --
@@ -162,7 +163,7 @@ jugar = do
   putStrLn "---------------------------------"
   putStrLn " "
   putStrLn "Escull un dels seguents Trumfus:"
-  escollirTrumfu ma1 ma2 ma3 ma4 0
+  escollirTrumfu ma1 ma2 ma3 ma4 3
 
 escollirTrumfu ma1 ma2 ma3 ma4 escollidor = do
   putStrLn "->> Oros, Bastos, Copes, Espases, Butifarra <<-"
@@ -358,38 +359,63 @@ mainLoop trumfu ma1 ma2 ma3 ma4 oldEscollidor multiplicador = do
   --TORN 1
   let tornTirada1 = mod (oldEscollidor + 1) 4
   let llistaJugadors = [ma1,ma2,ma3,ma4]
-  putStrLn ("TORN DEL JUGADOR "++show(tornTirada1+1))
+  putStrLn ("--- TORN DEL JUGADOR "++show(tornTirada1+1)++" ---")
   let cartaTirada1 = unsafePerformIO(realitzarTirada (llistaJugadors !! tornTirada1) tornTirada1 [] trumfu)
+  putStrLn (show cartaTirada1)
   putStrLn ("El jugador "++show(tornTirada1+1)++" ha tirat la següent carta: "++show(cartaTirada1))
   putStrLn ("Actualment sobre la taula hi han les següents cartes: "++show(cartaTirada1))
   putStrLn " "
   --TORN 2
   let tornTirada2 = mod (tornTirada1 + 1) 4
-  putStrLn ("TORN DEL JUGADOR "++show(tornTirada2+1))
+  putStrLn ("--- TORN DEL JUGADOR "++show(tornTirada2+1)++" ---")
   let cartaTirada2 = unsafePerformIO(realitzarTirada (llistaJugadors !! tornTirada2) tornTirada2 [cartaTirada1] trumfu)
+  putStrLn (show cartaTirada2)
   putStrLn ("El jugador "++show(tornTirada2+1)++" ha tirat la següent carta: "++show(cartaTirada2))
   putStrLn ("Actualment sobre la taula hi han les següents cartes: "++show([cartaTirada1,cartaTirada2]))
   putStrLn " "
   --TORN 3
   let tornTirada3 = mod (tornTirada2 + 1) 4
-  putStrLn ("TORN DEL JUGADOR "++show(tornTirada3+1))
+  putStrLn ("--- TORN DEL JUGADOR "++show(tornTirada3+1)++" ---")
   let cartaTirada3 = unsafePerformIO(realitzarTirada (llistaJugadors !! tornTirada3) tornTirada3 [cartaTirada1,cartaTirada2] trumfu)
+  putStrLn (show cartaTirada3)
   putStrLn ("El jugador "++show(tornTirada3+1)++" ha tirat la següent carta: "++show(cartaTirada3))
   putStrLn ("Actualment sobre la taula hi han les següents cartes: "++show([cartaTirada1,cartaTirada2,cartaTirada3]))
   putStrLn " "
   --TORN TIRADA 4
   let tornTirada4 = mod (tornTirada3 + 1) 4
-  putStrLn ("TORN DEL JUGADOR "++show(tornTirada4+1))
+  putStrLn ("--- TORN DEL JUGADOR "++show(tornTirada4+1)++" ---")
   let cartaTirada4 = unsafePerformIO(realitzarTirada (llistaJugadors !! tornTirada4) tornTirada4 [cartaTirada1,cartaTirada2,cartaTirada3] trumfu)
-  putStrLn " "
+  putStrLn (show cartaTirada4)
   putStrLn ("El jugador "++show(tornTirada4+1)++" ha tirat la següent carta: "++show(cartaTirada4))
   putStrLn ("Actualment sobre la taula hi han les següents cartes: "++show([cartaTirada1,cartaTirada2,cartaTirada3,cartaTirada4]))
   putStrLn " "
   --COMPROBAR GUANYADOR
-  putStrLn "Precedirem a evaluar el guanyador: "
+  putStrLn "Precedirem a evaluar el guanyador:"
+  let basa = (NewB (tornTirada1,cartaTirada1,cartaTirada2,cartaTirada3,cartaTirada4))
+  let guanyador = jugadorGuanyaBasa basa trumfu
+  putStrLn ("El jugador que ha guanyat la basa actual ha estat el Jugador "++show(guanyador+1))
   --COMPROBAR LA PUNTUACIO QUE HI HA SOBRE LA TAULA
+  let puntsGuanyats = ((punts (cartesBasa basa))+1)
+  if (guanyador == 0) || (guanyador == 2) then do
+    putStrLn ("La parella formada per el Jugador 1 i el Jugador 3 ha guanyat "++show(puntsGuanyats)++" en aquesta basa!")
+  else do
+    putStrLn ("La parella formada per el Jugador 2 i el Jugador 4 ha guanyat "++show(puntsGuanyats)++" en aquesta basa!")
   --SUMAR PUNTS A LA PARELLA GUANYADORA
-  --COMPROBAR SI ALGU HA ARRIBAT ALS 101 PUNTS SI ES QUE SI ACABAR PARTIDA
+  let oldPuntuacio = (0,0)
+  let newPuntuacio = (puntsTuples puntsGuanyats guanyador oldPuntuacio)
+  --TREURE LES CARTES TIRADES DE LES MANS
+  -- let ordreTirada = [tornTirada1,tornTirada2,tornTirada3,tornTirada4]
+  -- let cartesTirades = [cartaTirada1,cartaTirada2,cartaTirada3,cartaTirada4]
+  -- let newMa1 = (treureCartaTirada llistaJugadors ordreTirada cartesTirades 0)
+  -- let newMa2 = (treureCartaTirada llistaJugadors ordreTirada cartesTirades 1)
+  -- let newMa3 = (treureCartaTirada llistaJugadors ordreTirada cartesTirades 2)
+  -- let newMa4 = (treureCartaTirada llistaJugadors ordreTirada cartesTirades 3)
+  -- if ((fst newPuntuacio) >= 101) then do --COMPROBAR SI ALGU HA ARRIBAT ALS 101 PUNTS SI ES QUE SI ACABAR PARTIDA
+  --   putStrLn "Parella J1 i J3 han guanyat"
+  -- else if ((snd newPuntuacio) >= 101) then do
+  --   putStrLn "Parella J2 i J4 han guanyat"
+  -- else do
+  --   return True
   --COMPROBAR SI S'HAN TIRAT TOTES LES CARTES SI ES QUE SI ES TORNA A BARREJAR LA BARALLA, REPARTIR LES CARTES I ES TORNA A TRIAR EL TRUMFU
   --SI NO HA PASSAT RES DE LES ANTERIORS ES SEGUEIXEN REALITZANT TIRADES I ACOMULANT PUNTS
   -- let newEscollidor = mod (oldEscollidor + 1) 4
@@ -415,17 +441,42 @@ realitzarTirada ma jugador cartesJugades trumfu = do
 
 escollirCarta cartes = do
   input <- getLine
-  let index = (read input::Int)
-  if (index + 1) > length(cartes) then do --Hem escollit un index no valid
-    putStrLn "ERROR"
+  if (length input) > 2 then do
+    putStrLn "ERROR: Index no valid. Torna a escollir."
     escollirCarta cartes
+  else if (length input) == 2 then do
+    if (isDigit(input !! 0)) && (isDigit(input !! 1)) then do --es un index valid
+      let index = (read input::Int)
+      if (index + 1) > length(cartes) then do --Hem escollit un index no valid
+        putStrLn "ERROR: Index no valid. Torna a escollir."
+        escollirCarta cartes
+      else do
+        return (cartes!!index)
+    else do --no es valid ERROR
+      putStrLn "ERROR: Index no valid. Torna a escollir."
+      escollirCarta cartes
   else do
-    putStrLn ("Has escollit jugar la carta "++show(cartes!!index))
-    return (cartes!!index)
+    if (isDigit(input !! 0)) then do--es un index valid
+      let index = (read input::Int)
+      if (index + 1) > length(cartes) then do --Hem escollit un index no valid
+        putStrLn "ERROR: Index no valid. Torna a escollir."
+        escollirCarta cartes
+      else do
+        return (cartes!!index)
+    else do-- no es valid ERROR
+    putStrLn "ERROR: Index no valid. Torna a escollir."
+    escollirCarta cartes
 
 --------------------------
 --- Funcions Auxiliars ---
 --------------------------
+
+puntsTuples :: Int -> Int -> (Int,Int) -> (Int,Int)
+puntsTuples pguanyats 0 p = ((fst(p)+pguanyats),(snd(p)))
+puntsTuples pguanyats 2 p = ((fst(p)+pguanyats),(snd(p)))
+puntsTuples pguanyats 1 p = ((fst(p)),((snd(p))+pguanyats))
+puntsTuples pguanyats 3 p = ((fst(p)),((snd(p))+pguanyats))
+
 teManillaOAsDeTrunfus :: Trumfu -> Ma -> Bool
 teManillaOAsDeTrunfus t (NewM l)
   | ([x | x<-l, ((trumfu2Pal t == (getPal x)) && ((getTipus x == As) || (getTipus x == As)))] == []) = False
@@ -438,7 +489,7 @@ esContra2 :: Trumfu -> Ma -> Ma -> Bool
 esContra2 trumfu maX maY = if (length (cartesPalMa maX (trumfu2Pal trumfu)) >=4) || (length (cartesPalMa maY (trumfu2Pal trumfu)) >=4) ||  ((length (cartesPalMa maX (trumfu2Pal trumfu)) >=3) && (teManillaOAsDeTrunfus trumfu maX)) || ((length (cartesPalMa maY (trumfu2Pal trumfu)) >=3) && (teManillaOAsDeTrunfus trumfu maY)) then True else False
 santVicens2 :: Trumfu -> Ma -> Ma -> Bool
 santVicens2 trumfu maX maY = if ((length (cartesPalMa maX (trumfu2Pal trumfu)) >=7) || (length (cartesPalMa maY (trumfu2Pal trumfu)) >=7)) then True else False
-santVicens1 :: Trumfu -> Ma -> Bool 
+santVicens1 :: Trumfu -> Ma -> Bool
 santVicens1 trumfu maX = if (length (cartesPalMa maX (trumfu2Pal trumfu)) >=7) then True else False
 esBarraca1 :: Trumfu -> Ma -> Bool
 esBarraca1 trumfu maX = if length (cartesPalMa maX (trumfu2Pal trumfu)) >=7 then True else False
