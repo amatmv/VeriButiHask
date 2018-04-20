@@ -841,10 +841,11 @@ cartesGuanyades trumfu (carta:xs) tirador
           trampa. Si no, retorna Nothing.
 -}
 puntsParelles :: [Ma] -> Trumfu -> [Carta] -> Int -> Maybe (Int, Int)
-puntsParelles mans t cartes jugador = Just (punts $ fst _cartes_guanyades, punts $ snd _cartes_guanyades)
+puntsParelles mans t cartes jugador
+ | (trampa mans t cartes jugador) /= Nothing = Nothing
+ | otherwise = Just (punts $ fst _cartes_guanyades, punts $ snd _cartes_guanyades)
   where
     _cartes_guanyades = cartesGuanyades t cartes jugador
-
 
 {- getPal
   Input: Una Carta.
